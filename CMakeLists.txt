@@ -11,46 +11,6 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
-list(APPEND SOURCES ${CMAKE_SOURCE_DIR}/src/main.c)
-list(APPEND SOURCES ${CMAKE_SOURCE_DIR}/src/convert.c)
-list(APPEND SOURCES ${CMAKE_SOURCE_DIR}/src/server.c)
-list(APPEND HEADERS ${CMAKE_SOURCE_DIR}/include/convert.h)
-list(APPEND HEADERS ${CMAKE_SOURCE_DIR}/include/server.h)
-
-set(simple-port-forwarder_SOURCES
-    ${CMAKE_SOURCE_DIR}/src/main.c
-    ${CMAKE_SOURCE_DIR}/src/convert.c
-    ${CMAKE_SOURCE_DIR}/src/server.c
-)
-
-set(simple-port-forwarder_HEADERS
-    ${CMAKE_SOURCE_DIR}/include/convert.h
-    ${CMAKE_SOURCE_DIR}/include/server.h
-)
-
-add_executable(simple-port-forwarder ${simple-port-forwarder_SOURCES})
-target_include_directories(simple-port-forwarder PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_include_directories(simple-port-forwarder PRIVATE /usr/local/include)
-
-# Check if the system uses 64-bit libraries
-get_property(LIB64 GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS)
-
-#Set the library suffix based on whether it's 64-bit or not
-if ("${LIB64}" STREQUAL "TRUE")
-   set(LIBSUFFIX 64)
-else()
-    set(LIBSUFFIX "")
-endif()
-
-target_link_directories(simple-port-forwarder PRIVATE /usr/local/lib${LIBSUFFIX})
-
-target_link_libraries(simple-port-forwarder PRIVATE p101_env)
-target_link_libraries(simple-port-forwarder PRIVATE p101_error)
-target_link_libraries(simple-port-forwarder PRIVATE p101_c)
-target_link_libraries(simple-port-forwarder PRIVATE p101_posix)
-target_link_libraries(simple-port-forwarder PRIVATE p101_unix)
-target_link_libraries(simple-port-forwarder PRIVATE p101_fsm)
-
 message("C Compiler: ${CMAKE_C_COMPILER}")
 get_filename_component(COMPILER_NAME "${CMAKE_C_COMPILER}" NAME_WE)
 message("COMPILER_NAME: ${COMPILER_NAME}")
@@ -80,17 +40,6 @@ set(STANDARD_FLAGS
     -D__BSD_VISIBLE
     -Werror
 )
-
-# Set compiler flags for the target simple-port-forwarder
-target_compile_options(simple-port-forwarder PRIVATE
-    ${STANDARD_FLAGS}
-    ${WARNING_FLAGS_LIST}
-    ${ANALYZER_FLAGS_LIST}
-    ${DEBUG_FLAGS_LIST}
-    ${SANITIZER_FLAGS_LIST}
-)
-# Add target_link_libraries for simple-port-forwarder
-target_link_libraries(simple-port-forwarder PRIVATE ${SANITIZER_FLAGS_STRING})
 
 if (NOT DEFINED CLANG_FORMAT_NAME)
     set(CLANG_FORMAT_NAME "clang-format")

@@ -1,0 +1,10 @@
+//
+// Created by main on 25/01/24.
+//
+
+#ifndef ASSIGNMENT1_JAN9_2024_HTTPREPONSE_H
+#define ASSIGNMENT1_JAN9_2024_HTTPREPONSE_H
+
+struct httpResponse;
+
+#endif //ASSIGNMENT1_JAN9_2024_HTTPREPONSE_H
