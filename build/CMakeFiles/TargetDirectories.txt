@@ -1,0 +1,4 @@
+/home/main/work/programs/simple-port-forwarder/build/CMakeFiles/simple-port-forwarder.dir
+/home/main/work/programs/simple-port-forwarder/build/CMakeFiles/format.dir
+/home/main/work/programs/simple-port-forwarder/build/CMakeFiles/edit_cache.dir
+/home/main/work/programs/simple-port-forwarder/build/CMakeFiles/rebuild_cache.dir
