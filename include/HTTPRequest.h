@@ -13,17 +13,11 @@
 struct HTTPRequest;
 
 /**
- * @brief Enum of HTTP status codes,
- * e.g. 200, 400, 500.
- */
-enum HTTPStatusCodes;
-
-/**
  * @brief Initializes a new HTTP request struct from a string.
  * @param string The string to parse.
  * @return
  */
-struct HTTPRequest * initializeHTTPRequestFromString(char * string);
+struct HTTPRequest *initializeHTTPRequestFromString(char *string);
 
 /**
  * @bried Initializes a new HTTP request struct.
@@ -32,14 +26,14 @@ struct HTTPRequest * initializeHTTPRequestFromString(char * string);
  * @param protocol The protocol, e.g. 1.0, 1.1
  * @return struct HTTPRequest
  */
-struct HTTPRequest * initializeHTTPRequest(const char * method, const char * path, const char * protocol);
+struct HTTPRequest *initializeHTTPRequest(const char *method, const char *path, const char *protocol);
 
 /**
  * @brief Strips the given string of return characters.
  * @param string The string to strip.
  * @return
  */
-char * stripHTTPRequestReturnCharacters(char * string);
+char *stripHTTPRequestReturnCharacters(char *string);
 
 /**
  * @brief Returns true if the given HTTP method is valid.
@@ -47,13 +41,12 @@ char * stripHTTPRequestReturnCharacters(char * string);
  * @param method The HTTP request
  * @return true or false
  */
-bool isValidHTTPMethod(char * method);
+bool isValidHTTPMethod(char *method);
 
 /**
  * @brief Prints the values of an HTTPRequest struct.
  * @param request The struct to print.
  */
-void printHTTPRequestStruct(const struct HTTPRequest * request);
+void printHTTPRequestStruct(const struct HTTPRequest *request);
 
-
-#endif //HTTPREQUEST_H
+#endif    // HTTPREQUEST_H

@@ -18,12 +18,12 @@ struct fileData;
  * @param filePath The path to the file.
  * @return struct * fileData
  */
-struct fileData * getFileDataFromFilePath(char * filePath);
+struct fileData *getFileDataFromFilePath(char *filePath);
 
 /**
  * @brief Prints a fileData struct to the console.
  * @param fileData The struct to print.
  */
-void printFileDataStruct(const struct fileData * fileData);
+void printFileDataStruct(const struct fileData *fileData);
 
-#endif //FILETOOLS_H
+#endif    // FILETOOLS_H

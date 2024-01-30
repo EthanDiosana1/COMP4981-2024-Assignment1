@@ -2,28 +2,6 @@
 -- Compiler being used: /usr/bin/clang
 C Compiler: /usr/bin/clang
 COMPILER_NAME: clang
-CMake Error at CMakeLists.txt:67 (file):
-  file STRINGS file
-  "/home/main/Desktop/BCIT_CST_2024/datacomm_2024/assignment1-jan9-2024/.flags/clang/warning_flags.txt"
-  cannot be read.
-
-
-CMake Error at CMakeLists.txt:70 (file):
-  file STRINGS file
-  "/home/main/Desktop/BCIT_CST_2024/datacomm_2024/assignment1-jan9-2024/.flags/clang/analyzer_flags.txt"
-  cannot be read.
-
-
-CMake Error at CMakeLists.txt:73 (file):
-  file STRINGS file
-  "/home/main/Desktop/BCIT_CST_2024/datacomm_2024/assignment1-jan9-2024/.flags/clang/debug_flags.txt"
-  cannot be read.
-
-
-CMake Error at CMakeLists.txt:76 (file):
-  file STRINGS file
-  "/home/main/Desktop/BCIT_CST_2024/datacomm_2024/assignment1-jan9-2024/.flags/clang/sanitizer_flags.txt"
-  cannot be read.
-
-
--- Configuring incomplete, errors occurred!
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/main/Desktop/BCIT_CST_2024/datacomm_2024/assignment1-jan9-2024/cmake-build-debug

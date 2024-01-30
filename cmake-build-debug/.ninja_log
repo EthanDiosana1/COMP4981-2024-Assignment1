@@ -1,7 +1,4 @@
 # ninja log v5
-0	80	1706635276939918150	CMakeFiles/Assignment1_Test.dir/src/HTTPRequest.c.o	b4f804a7ef27a896
 0	73	1706635276931917887	CMakeFiles/Assignment1_Test.dir/src/main.c.o	5868a9768a378ac3
-0	23	1706637072798900770	build.ninja	bcb01247ee19db57
+0	23	1706637622621401316	build.ninja	bcb01247ee19db57
 73	119	1706635276979919463	CMakeFiles/Assignment1_Test.dir/src/stringTools.c.o	55ac05e8887e8f50
-1	79	1706635276935918018	CMakeFiles/Assignment1_Test.dir/src/fileTools.c.o	88e7b5c40ff9bd24
-42	91	1706482291657438116	Assignment1_Test	ce30e1c735001166
