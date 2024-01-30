@@ -1,0 +1,3 @@
+/home/main/Desktop/BCIT_CST_2024/datacomm_2024/Assignment1-Test/cmake-build-debug/CMakeFiles/Assignment1_Test.dir
+/home/main/Desktop/BCIT_CST_2024/datacomm_2024/Assignment1-Test/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/main/Desktop/BCIT_CST_2024/datacomm_2024/Assignment1-Test/cmake-build-debug/CMakeFiles/rebuild_cache.dir
