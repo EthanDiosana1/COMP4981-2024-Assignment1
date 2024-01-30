@@ -1,11 +1,7 @@
 # ninja log v5
-0	72	1706482257540755175	CMakeFiles/Assignment1_Test.dir/src/HTTPRequest.c.o	6de46df43ea88c87
-0	42	1706482291605437071	CMakeFiles/Assignment1_Test.dir/src/main.c.o	841c482f72d22afe
-0	23	1706635270375702647	build.ninja	bcb01247ee19db57
-0	187	1706633616768750013	CMakeFiles/Assignment1_Test.dir/src/stringTools.c.o	25d0b2ad53f35a95
-1	191	1706633616772749970	CMakeFiles/Assignment1_Test.dir/src/fileTools.c.o	d6fd628924aefaa3
-42	91	1706482291657438116	Assignment1_Test	ce30e1c735001166
-0	73	1706635276931917887	CMakeFiles/Assignment1_Test.dir/src/main.c.o	5868a9768a378ac3
-1	79	1706635276935918018	CMakeFiles/Assignment1_Test.dir/src/fileTools.c.o	88e7b5c40ff9bd24
 0	80	1706635276939918150	CMakeFiles/Assignment1_Test.dir/src/HTTPRequest.c.o	b4f804a7ef27a896
+0	73	1706635276931917887	CMakeFiles/Assignment1_Test.dir/src/main.c.o	5868a9768a378ac3
+0	23	1706637072798900770	build.ninja	bcb01247ee19db57
 73	119	1706635276979919463	CMakeFiles/Assignment1_Test.dir/src/stringTools.c.o	55ac05e8887e8f50
+1	79	1706635276935918018	CMakeFiles/Assignment1_Test.dir/src/fileTools.c.o	88e7b5c40ff9bd24
+42	91	1706482291657438116	Assignment1_Test	ce30e1c735001166
