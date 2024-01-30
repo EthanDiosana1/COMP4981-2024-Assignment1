@@ -1,4 +1,4 @@
-# Install script for directory: /home/main/Desktop/BCIT_CST_2024/datacomm_2024/Assignment1-Test
+# Install script for directory: /home/main/Desktop/BCIT_CST_2024/datacomm_2024/assignment1-jan9-2024
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/main/Desktop/BCIT_CST_2024/datacomm_2024/Assignment1-Test/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/main/Desktop/BCIT_CST_2024/datacomm_2024/assignment1-jan9-2024/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
