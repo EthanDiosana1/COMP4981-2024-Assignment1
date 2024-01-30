@@ -1,0 +1,4 @@
+/home/kiefer/work2/templates/template-c/build/CMakeFiles/main.dir
+/home/kiefer/work2/templates/template-c/build/CMakeFiles/format.dir
+/home/kiefer/work2/templates/template-c/build/CMakeFiles/edit_cache.dir
+/home/kiefer/work2/templates/template-c/build/CMakeFiles/rebuild_cache.dir
