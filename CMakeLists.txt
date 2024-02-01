@@ -11,17 +11,23 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
+list(APPEND HEADERS ${CMAKE_SOURCE_DIR}/include/main.h)
 list(APPEND SOURCES ${CMAKE_SOURCE_DIR}/src/main.c)
-list(APPEND HEADERS ${CMAKE_SOURCE_DIR}/include/stringTools.h)
-list(APPEND SOURCES ${CMAKE_SOURCE_DIR}/src/stringTools.c)
+list(APPEND HEADERS ${CMAKE_SOURCE_DIR}/include/server.h)
+list(APPEND SOURCES ${CMAKE_SOURCE_DIR}/src/server.c)
+list(APPEND HEADERS ${CMAKE_SOURCE_DIR}/include/client.h)
+list(APPEND SOURCES ${CMAKE_SOURCE_DIR}/src/client.c)
 
 set(main_SOURCES
     ${CMAKE_SOURCE_DIR}/src/main.c
-    ${CMAKE_SOURCE_DIR}/src/stringTools.c
+    ${CMAKE_SOURCE_DIR}/src/server.c
+    ${CMAKE_SOURCE_DIR}/src/client.c
 )
 
 set(main_HEADERS
-    ${CMAKE_SOURCE_DIR}/include/stringTools.h
+    ${CMAKE_SOURCE_DIR}/include/main.h
+    ${CMAKE_SOURCE_DIR}/include/server.h
+    ${CMAKE_SOURCE_DIR}/include/client.h
 )
 
 add_executable(main ${main_SOURCES})
