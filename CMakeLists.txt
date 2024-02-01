@@ -12,12 +12,16 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
 list(APPEND SOURCES ${CMAKE_SOURCE_DIR}/src/main.c)
+list(APPEND HEADERS ${CMAKE_SOURCE_DIR}/include/stringTools.h)
+list(APPEND SOURCES ${CMAKE_SOURCE_DIR}/src/stringTools.c)
 
 set(main_SOURCES
     ${CMAKE_SOURCE_DIR}/src/main.c
+    ${CMAKE_SOURCE_DIR}/src/stringTools.c
 )
 
 set(main_HEADERS
+    ${CMAKE_SOURCE_DIR}/include/stringTools.h
 )
 
 add_executable(main ${main_SOURCES})
