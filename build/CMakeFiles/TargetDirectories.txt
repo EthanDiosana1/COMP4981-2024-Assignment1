@@ -1,4 +1,0 @@
-/home/kiefer/comp4981/github_ver/assignment1/build/CMakeFiles/main.dir
-/home/kiefer/comp4981/github_ver/assignment1/build/CMakeFiles/format.dir
-/home/kiefer/comp4981/github_ver/assignment1/build/CMakeFiles/edit_cache.dir
-/home/kiefer/comp4981/github_ver/assignment1/build/CMakeFiles/rebuild_cache.dir

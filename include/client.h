@@ -6,6 +6,6 @@
 #define MAIN_CLIENT_H
 
 void client(void);
-int  connect_client(char *serverInformation[]);
+int connect_client(char *serverInformation[]);
 
-#endif    // MAIN_CLIENT_H
+#endif // MAIN_CLIENT_H
