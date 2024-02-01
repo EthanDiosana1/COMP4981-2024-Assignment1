@@ -41,7 +41,7 @@ generate_cmake_content() {
 
  echo "# Check if the system uses 64-bit libraries" >> "$output_file"
  echo "get_property(LIB64 GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS)" >> "$output_file"
- echo "" >> "$output_file" >> "$output_file"
+ echo "" >> "$output_file"
 
  echo "#Set the library suffix based on whether it's 64-bit or not" >> "$output_file"
  echo "if (\"\${LIB64}\" STREQUAL \"TRUE\")" >> "$output_file"
@@ -51,6 +51,7 @@ generate_cmake_content() {
  echo "endif()" >> "$output_file"
  echo "" >> "$output_file"
  echo "target_link_directories($entity PRIVATE /usr/local/lib\${LIBSUFFIX})" >> "$output_file"
+ echo "target_link_options($entity PRIVATE \${INSTRUMENTATION_FLAGS_LIST})" >> "$output_file"
  echo "" >> "$output_file"
 
   # Add target_link_libraries for the entity
@@ -102,11 +103,6 @@ generate_cmake_content() {
   echo "endfunction()" >> "$output_file"
   echo "" >> "$output_file"
 
-  # Import warning_flags.txt
-  echo "file(STRINGS \"\${CMAKE_SOURCE_DIR}/.flags/\${COMPILER_NAME}/warning_flags.txt\" WARNING_FLAGS_STRING)" >> "$output_file"
-  echo "split_string_into_list(\"\${WARNING_FLAGS_STRING}\" WARNING_FLAGS_LIST)" >> "$output_file"
-  echo "" >> "$output_file"
-
   # Import analyzer_flags.txt
   echo "file(STRINGS \"\${CMAKE_SOURCE_DIR}/.flags/\${COMPILER_NAME}/analyzer_flags.txt\" ANALYZER_FLAGS_STRING)" >> "$output_file"
   echo "split_string_into_list(\"\${ANALYZER_FLAGS_STRING}\" ANALYZER_FLAGS_LIST)" >> "$output_file"
@@ -117,10 +113,84 @@ generate_cmake_content() {
   echo "split_string_into_list(\"\${DEBUG_FLAGS_STRING}\" DEBUG_FLAGS_LIST)" >> "$output_file"
   echo "" >> "$output_file"
 
-  # Import sanitizer_flags.txt
-  echo "file(STRINGS \"\${CMAKE_SOURCE_DIR}/.flags/\${COMPILER_NAME}/sanitizer_flags.txt\" SANITIZER_FLAGS_STRING)" >> "$output_file"
-  echo "split_string_into_list(\"\${SANITIZER_FLAGS_STRING}\" SANITIZER_FLAGS_LIST)" >> "$output_file"
+  # Import instrumentation_flags.txt
+  echo "file(STRINGS \"\${CMAKE_SOURCE_DIR}/.flags/\${COMPILER_NAME}/instrumentation_flags.txt\" INSTRUMENTATION_FLAGS_STRING)" >> "$output_file"
+  echo "split_string_into_list(\"\${INSTRUMENTATION_FLAGS_STRING}\" INSTRUMENTATION_FLAGS_LIST)" >> "$output_file"
   echo "" >> "$output_file"
+
+  # Import optimization_flags.txt
+  echo "file(STRINGS \"\${CMAKE_SOURCE_DIR}/.flags/\${COMPILER_NAME}/optimization_flags.txt\" OPTIMIZATION_FLAGS_STRING)" >> "$output_file"
+  echo "split_string_into_list(\"\${OPTIMIZATION_FLAGS_STRING}\" OPTIMIZATION_FLAGS_LIST)" >> "$output_file"
+  echo "" >> "$output_file"
+
+  # Import warning_flags.txt
+  echo "file(STRINGS \"\${CMAKE_SOURCE_DIR}/.flags/\${COMPILER_NAME}/warning_flags.txt\" WARNING_FLAGS_STRING)" >> "$output_file"
+  echo "split_string_into_list(\"\${WARNING_FLAGS_STRING}\" WARNING_FLAGS_LIST)" >> "$output_file"
+  echo "" >> "$output_file"
+
+  echo "if(SANITIZER_address STREQUAL \"ON\")" >> "$output_file"
+  echo "    file(STRINGS \"\${CMAKE_CURRENT_SOURCE_DIR}/.flags/\${COMPILER_NAME}/address_sanitizer_flags.txt\" ADDRESS_SANITIZER_FLAGS_STRING)" >> "$output_file"
+  echo "    split_string_into_list(\"\${ADDRESS_SANITIZER_FLAGS_STRING}\" ADDRESS_SANITIZER_FLAGS_LIST)" >> "$output_file"
+  echo "    target_compile_options($entity PRIVATE \${ADDRESS_SANITIZER_FLAGS_LIST})" >> "$output_file"
+  echo "    target_link_options($entity PRIVATE \${ADDRESS_SANITIZER_FLAGS_LIST})" >> "$output_file"
+  echo "endif()" >> "$output_file"
+  echo "" >> "$output_file"
+
+  echo "if(SANITIZER_cfi STREQUAL \"ON\")" >> "$output_file"
+  echo "    file(STRINGS \"\${CMAKE_CURRENT_SOURCE_DIR}/.flags/${COMPILER_NAME}/cfi_sanitizer_flags.txt\" CFI_SANITIZER_FLAGS_STRING)" >> "$output_file"
+  echo "    split_string_into_list(\"\${CFI_SANITIZER_FLAGS_STRING}\" CFI_SANITIZER_FLAGS_LIST)" >> "$output_file"
+  echo "    target_compile_options($entity PRIVATE \${CFI_SANITIZER_FLAGS_LIST})" >> "$output_file"
+  echo "    target_link_options($entity PRIVATE \${CFI_SANITIZER_FLAGS_LIST})" >> "$output_file"
+  echo "endif()" >> "$output_file"
+
+  echo "if(SANITIZER_dataflow STREQUAL \"ON\")" >> "$output_file"
+  echo "    file(STRINGS \"\${CMAKE_CURRENT_SOURCE_DIR}/.flags/${COMPILER_NAME}/dataflow_sanitizer_flags.txt\" DATAFLOW_SANITIZER_FLAGS_STRING)" >> "$output_file"
+  echo "    split_string_into_list(\"\${DATAFLOW_SANITIZER_FLAGS_STRING}\" DATAFLOW_SANITIZER_FLAGS_LIST)" >> "$output_file"
+  echo "    target_compile_options($entity PRIVATE \${DATAFLOW_SANITIZER_FLAGS_LIST})" >> "$output_file"
+  echo "    target_link_options($entity PRIVATE \${DATAFLOW_SANITIZER_FLAGS_LIST})" >> "$output_file"
+  echo "endif()" >> "$output_file"
+
+  echo "if(SANITIZER_hwaddress STREQUAL \"ON\")" >> "$output_file"
+  echo "    file(STRINGS \"\${CMAKE_CURRENT_SOURCE_DIR}/.flags/${COMPILER_NAME}/hwaddress_sanitizer_flags.txt\" HWADDRESS_SANITIZER_FLAGS_STRING)" >> "$output_file"
+  echo "    split_string_into_list(\"\${HWADDRESS_SANITIZER_FLAGS_STRING}\" HWADDRESS_SANITIZER_FLAGS_LIST)" >> "$output_file"
+  echo "    target_compile_options($entity PRIVATE \${HWADDRESS_SANITIZER_FLAGS_LIST})" >> "$output_file"
+  echo "    target_link_options($entity PRIVATE \${HWADDRESS_SANITIZER_FLAGS_LIST})" >> "$output_file"
+  echo "endif()" >> "$output_file"
+
+  echo "if(SANITIZER_memory STREQUAL \"ON\")" >> "$output_file"
+  echo "    file(STRINGS \"\${CMAKE_CURRENT_SOURCE_DIR}/.flags/${COMPILER_NAME}/memory_sanitizer_flags.txt\" MEMORY_SANITIZER_FLAGS_STRING)" >> "$output_file"
+  echo "    split_string_into_list(\"\${MEMORY_SANITIZER_FLAGS_STRING}\" MEMORY_SANITIZER_FLAGS_LIST)" >> "$output_file"
+  echo "    target_compile_options($entity PRIVATE \${MEMORY_SANITIZER_FLAGS_LIST})" >> "$output_file"
+  echo "    target_link_options($entity PRIVATE \${MEMORY_SANITIZER_FLAGS_LIST})" >> "$output_file"
+  echo "endif()" >> "$output_file"
+
+  echo "if(SANITIZER_pointer_overflow STREQUAL \"ON\")" >> "$output_file"
+  echo "    file(STRINGS \"\${CMAKE_CURRENT_SOURCE_DIR}/.flags/${COMPILER_NAME}/pointer_overflow_sanitizer_flags.txt\" POINTER_OVERFLOW_SANITIZER_FLAGS_STRING)" >> "$output_file"
+  echo "    split_string_into_list(\"\${POINTER_OVERFLOW_FLAGS_STRING}\" POINTER_OVERFLOW_SANITIZER_FLAGS_LIST)" >> "$output_file"
+  echo "    target_compile_options($entity PRIVATE \${POINTER_OVERFLOW_SANITIZER_FLAGS_LIST})" >> "$output_file"
+  echo "    target_link_options($entity PRIVATE \${POINTER_OVERFLOW_SANITIZER_FLAGS_LIST})" >> "$output_file"
+  echo "endif()" >> "$output_file"
+
+  echo "if(SANITIZER_safe_stack STREQUAL \"ON\")" >> "$output_file"
+  echo "    file(STRINGS \"\${CMAKE_CURRENT_SOURCE_DIR}/.flags/${COMPILER_NAME}/safe_stack_sanitizer_flags.txt\" SAFE_STACK_SANITIZER_FLAGS_STRING)" >> "$output_file"
+  echo "    split_string_into_list(\"\${SAFE_STACK_FLAGS_STRING}\" SAFE_STACK_SANITIZER_FLAGS_LIST)" >> "$output_file"
+  echo "    target_compile_options($entity PRIVATE \${SAFE_STACK_SANITIZER_FLAGS_LIST})" >> "$output_file"
+  echo "    target_link_options($entity PRIVATE \${SAFE_STACK_SANITIZER_FLAGS_LIST})" >> "$output_file"
+  echo "endif()" >> "$output_file"
+
+  echo "if(SANITIZER_thread STREQUAL \"ON\")" >> "$output_file"
+  echo "    file(STRINGS \"\${CMAKE_CURRENT_SOURCE_DIR}/.flags/${COMPILER_NAME}/thread_sanitizer_flags.txt\" THREAD_SANITIZER_FLAGS_STRING)" >> "$output_file"
+  echo "    split_string_into_list(\"\${THREAD_FLAGS_STRING}\" THREAD_SANITIZER_FLAGS_LIST)" >> "$output_file"
+  echo "    target_compile_options($entity PRIVATE \${THREAD_SANITIZER_FLAGS_LIST})" >> "$output_file"
+  echo "    target_link_options($entity PRIVATE \${THREAD_SANITIZER_FLAGS_LIST})" >> "$output_file"
+  echo "endif()" >> "$output_file"
+
+  echo "if(SANITIZER_undefined STREQUAL \"ON\")" >> "$output_file"
+  echo "    file(STRINGS \"\${CMAKE_CURRENT_SOURCE_DIR}/.flags/\${COMPILER_NAME}/undefined_sanitizer_flags.txt\" UNDEFINED_SANITIZER_FLAGS_STRING)" >> "$output_file"
+  echo "    split_string_into_list(\"\${UNDEFINED_SANITIZER_FLAGS_STRING}\" UNDEFINED_SANITIZER_FLAGS_LIST)" >> "$output_file"
+  echo "    target_compile_options($entity PRIVATE \${UNDEFINED_SANITIZER_FLAGS_LIST})" >> "$output_file"
+  echo "    target_link_options($entity PRIVATE \${UNDEFINED_SANITIZER_FLAGS_LIST})" >> "$output_file"
+  echo "endif()" >> "$output_file"
 
   # Common compiler flags
   echo "set(STANDARD_FLAGS" >> "$output_file"
@@ -139,14 +209,15 @@ generate_cmake_content() {
     echo "# Set compiler flags for the target $target" >> "$output_file"
     echo "target_compile_options($target PRIVATE" >> "$output_file"
     echo "    \${STANDARD_FLAGS}" >> "$output_file"
-    echo "    \${WARNING_FLAGS_LIST}" >> "$output_file"
     echo "    \${ANALYZER_FLAGS_LIST}" >> "$output_file"
     echo "    \${DEBUG_FLAGS_LIST}" >> "$output_file"
-    echo "    \${SANITIZER_FLAGS_LIST}" >> "$output_file"
+    echo "    \${INSTRUMENTATION_FLAGS_LIST}" >> "$output_file"
+    echo "    \${OPTIMIZATION_FLAGS_LIST}" >> "$output_file"
+    echo "    \${WARNING_FLAGS_LIST}" >> "$output_file"
     echo ")" >> "$output_file"
 
     echo "# Add target_link_libraries for $target" >> "$output_file"
-    echo "target_link_libraries($target PRIVATE \${SANITIZER_FLAGS_STRING})" >> "$output_file"
+    echo "target_link_libraries($target PRIVATE \${INSTRUMENTATION_FLAGS_STRING})" >> "$output_file"
     echo "" >> "$output_file"
   done
 

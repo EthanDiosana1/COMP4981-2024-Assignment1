@@ -12,30 +12,12 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
 list(APPEND SOURCES ${CMAKE_SOURCE_DIR}/src/main.c)
-list(APPEND HEADERS ${CMAKE_SOURCE_DIR}/include/main.h)
-list(APPEND SOURCES ${CMAKE_SOURCE_DIR}/src/server.c)
-list(APPEND HEADERS ${CMAKE_SOURCE_DIR}/include/server.h)
-list(APPEND SOURCES ${CMAKE_SOURCE_DIR}/src/stringTools.c)
-list(APPEND HEADERS ${CMAKE_SOURCE_DIR}/include/stringTools.h)
-list(APPEND SOURCES ${CMAKE_SOURCE_DIR}/src/HTTPRequest.c)
-list(APPEND HEADERS ${CMAKE_SOURCE_DIR}/include/HTTPRequest.h)
-list(APPEND SOURCES ${CMAKE_SOURCE_DIR}/src/fileTools.c)
-list(APPEND HEADERS ${CMAKE_SOURCE_DIR}/include/fileTools.h)
 
 set(main_SOURCES
     ${CMAKE_SOURCE_DIR}/src/main.c
-    ${CMAKE_SOURCE_DIR}/src/server.c
-    ${CMAKE_SOURCE_DIR}/src/stringTools.c
-    ${CMAKE_SOURCE_DIR}/src/HTTPRequest.c
-    ${CMAKE_SOURCE_DIR}/src/fileTools.c
 )
 
 set(main_HEADERS
-    ${CMAKE_SOURCE_DIR}/include/main.h
-    ${CMAKE_SOURCE_DIR}/include/server.h
-    ${CMAKE_SOURCE_DIR}/include/stringTools.h
-    ${CMAKE_SOURCE_DIR}/include/HTTPRequest.h
-    ${CMAKE_SOURCE_DIR}/include/fileTools.h
 )
 
 add_executable(main ${main_SOURCES})
@@ -53,6 +35,7 @@ else()
 endif()
 
 target_link_directories(main PRIVATE /usr/local/lib${LIBSUFFIX})
+target_link_options(main PRIVATE ${INSTRUMENTATION_FLAGS_LIST})
 
 
 message("C Compiler: ${CMAKE_C_COMPILER}")
@@ -64,18 +47,76 @@ function(split_string_into_list _input_string _output_list)
     set(${_output_list} ${_split_list} PARENT_SCOPE)
 endfunction()
 
-file(STRINGS "${CMAKE_SOURCE_DIR}/.flags/${COMPILER_NAME}/warning_flags.txt" WARNING_FLAGS_STRING)
-split_string_into_list("${WARNING_FLAGS_STRING}" WARNING_FLAGS_LIST)
-
 file(STRINGS "${CMAKE_SOURCE_DIR}/.flags/${COMPILER_NAME}/analyzer_flags.txt" ANALYZER_FLAGS_STRING)
 split_string_into_list("${ANALYZER_FLAGS_STRING}" ANALYZER_FLAGS_LIST)
 
 file(STRINGS "${CMAKE_SOURCE_DIR}/.flags/${COMPILER_NAME}/debug_flags.txt" DEBUG_FLAGS_STRING)
 split_string_into_list("${DEBUG_FLAGS_STRING}" DEBUG_FLAGS_LIST)
 
-file(STRINGS "${CMAKE_SOURCE_DIR}/.flags/${COMPILER_NAME}/sanitizer_flags.txt" SANITIZER_FLAGS_STRING)
-split_string_into_list("${SANITIZER_FLAGS_STRING}" SANITIZER_FLAGS_LIST)
+file(STRINGS "${CMAKE_SOURCE_DIR}/.flags/${COMPILER_NAME}/instrumentation_flags.txt" INSTRUMENTATION_FLAGS_STRING)
+split_string_into_list("${INSTRUMENTATION_FLAGS_STRING}" INSTRUMENTATION_FLAGS_LIST)
 
+file(STRINGS "${CMAKE_SOURCE_DIR}/.flags/${COMPILER_NAME}/optimization_flags.txt" OPTIMIZATION_FLAGS_STRING)
+split_string_into_list("${OPTIMIZATION_FLAGS_STRING}" OPTIMIZATION_FLAGS_LIST)
+
+file(STRINGS "${CMAKE_SOURCE_DIR}/.flags/${COMPILER_NAME}/warning_flags.txt" WARNING_FLAGS_STRING)
+split_string_into_list("${WARNING_FLAGS_STRING}" WARNING_FLAGS_LIST)
+
+if(SANITIZER_address STREQUAL "ON")
+    file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/.flags/${COMPILER_NAME}/address_sanitizer_flags.txt" ADDRESS_SANITIZER_FLAGS_STRING)
+    split_string_into_list("${ADDRESS_SANITIZER_FLAGS_STRING}" ADDRESS_SANITIZER_FLAGS_LIST)
+    target_compile_options(main PRIVATE ${ADDRESS_SANITIZER_FLAGS_LIST})
+    target_link_options(main PRIVATE ${ADDRESS_SANITIZER_FLAGS_LIST})
+endif()
+
+if(SANITIZER_cfi STREQUAL "ON")
+    file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/.flags//cfi_sanitizer_flags.txt" CFI_SANITIZER_FLAGS_STRING)
+    split_string_into_list("${CFI_SANITIZER_FLAGS_STRING}" CFI_SANITIZER_FLAGS_LIST)
+    target_compile_options(main PRIVATE ${CFI_SANITIZER_FLAGS_LIST})
+    target_link_options(main PRIVATE ${CFI_SANITIZER_FLAGS_LIST})
+endif()
+if(SANITIZER_dataflow STREQUAL "ON")
+    file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/.flags//dataflow_sanitizer_flags.txt" DATAFLOW_SANITIZER_FLAGS_STRING)
+    split_string_into_list("${DATAFLOW_SANITIZER_FLAGS_STRING}" DATAFLOW_SANITIZER_FLAGS_LIST)
+    target_compile_options(main PRIVATE ${DATAFLOW_SANITIZER_FLAGS_LIST})
+    target_link_options(main PRIVATE ${DATAFLOW_SANITIZER_FLAGS_LIST})
+endif()
+if(SANITIZER_hwaddress STREQUAL "ON")
+    file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/.flags//hwaddress_sanitizer_flags.txt" HWADDRESS_SANITIZER_FLAGS_STRING)
+    split_string_into_list("${HWADDRESS_SANITIZER_FLAGS_STRING}" HWADDRESS_SANITIZER_FLAGS_LIST)
+    target_compile_options(main PRIVATE ${HWADDRESS_SANITIZER_FLAGS_LIST})
+    target_link_options(main PRIVATE ${HWADDRESS_SANITIZER_FLAGS_LIST})
+endif()
+if(SANITIZER_memory STREQUAL "ON")
+    file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/.flags//memory_sanitizer_flags.txt" MEMORY_SANITIZER_FLAGS_STRING)
+    split_string_into_list("${MEMORY_SANITIZER_FLAGS_STRING}" MEMORY_SANITIZER_FLAGS_LIST)
+    target_compile_options(main PRIVATE ${MEMORY_SANITIZER_FLAGS_LIST})
+    target_link_options(main PRIVATE ${MEMORY_SANITIZER_FLAGS_LIST})
+endif()
+if(SANITIZER_pointer_overflow STREQUAL "ON")
+    file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/.flags//pointer_overflow_sanitizer_flags.txt" POINTER_OVERFLOW_SANITIZER_FLAGS_STRING)
+    split_string_into_list("${POINTER_OVERFLOW_FLAGS_STRING}" POINTER_OVERFLOW_SANITIZER_FLAGS_LIST)
+    target_compile_options(main PRIVATE ${POINTER_OVERFLOW_SANITIZER_FLAGS_LIST})
+    target_link_options(main PRIVATE ${POINTER_OVERFLOW_SANITIZER_FLAGS_LIST})
+endif()
+if(SANITIZER_safe_stack STREQUAL "ON")
+    file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/.flags//safe_stack_sanitizer_flags.txt" SAFE_STACK_SANITIZER_FLAGS_STRING)
+    split_string_into_list("${SAFE_STACK_FLAGS_STRING}" SAFE_STACK_SANITIZER_FLAGS_LIST)
+    target_compile_options(main PRIVATE ${SAFE_STACK_SANITIZER_FLAGS_LIST})
+    target_link_options(main PRIVATE ${SAFE_STACK_SANITIZER_FLAGS_LIST})
+endif()
+if(SANITIZER_thread STREQUAL "ON")
+    file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/.flags//thread_sanitizer_flags.txt" THREAD_SANITIZER_FLAGS_STRING)
+    split_string_into_list("${THREAD_FLAGS_STRING}" THREAD_SANITIZER_FLAGS_LIST)
+    target_compile_options(main PRIVATE ${THREAD_SANITIZER_FLAGS_LIST})
+    target_link_options(main PRIVATE ${THREAD_SANITIZER_FLAGS_LIST})
+endif()
+if(SANITIZER_undefined STREQUAL "ON")
+    file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/.flags/${COMPILER_NAME}/undefined_sanitizer_flags.txt" UNDEFINED_SANITIZER_FLAGS_STRING)
+    split_string_into_list("${UNDEFINED_SANITIZER_FLAGS_STRING}" UNDEFINED_SANITIZER_FLAGS_LIST)
+    target_compile_options(main PRIVATE ${UNDEFINED_SANITIZER_FLAGS_LIST})
+    target_link_options(main PRIVATE ${UNDEFINED_SANITIZER_FLAGS_LIST})
+endif()
 set(STANDARD_FLAGS
     -D_POSIX_C_SOURCE=200809L
     -D_XOPEN_SOURCE=700
@@ -88,13 +129,14 @@ set(STANDARD_FLAGS
 # Set compiler flags for the target main
 target_compile_options(main PRIVATE
     ${STANDARD_FLAGS}
-    ${WARNING_FLAGS_LIST}
     ${ANALYZER_FLAGS_LIST}
     ${DEBUG_FLAGS_LIST}
-    ${SANITIZER_FLAGS_LIST}
+    ${INSTRUMENTATION_FLAGS_LIST}
+    ${OPTIMIZATION_FLAGS_LIST}
+    ${WARNING_FLAGS_LIST}
 )
 # Add target_link_libraries for main
-target_link_libraries(main PRIVATE ${SANITIZER_FLAGS_STRING})
+target_link_libraries(main PRIVATE ${INSTRUMENTATION_FLAGS_STRING})
 
 if (NOT DEFINED CLANG_FORMAT_NAME)
     set(CLANG_FORMAT_NAME "clang-format")

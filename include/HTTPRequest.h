@@ -13,6 +13,12 @@
 struct HTTPRequest;
 
 /**
+ * @brief Enum of HTTP status codes,
+ * e.g. 200, 400, 500.
+ */
+enum HTTPStatusCodes;
+
+/**
  * @brief Initializes a new HTTP request struct from a string.
  * @param string The string to parse.
  * @return

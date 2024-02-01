@@ -1,1 +1,1 @@
-main src/main.c include/main.h src/server.c include/server.h src/stringTools.c include/stringTools.h src/HTTPRequest.c include/HTTPRequest.h src/fileTools.c include/fileTools.h
+main src/main.c
