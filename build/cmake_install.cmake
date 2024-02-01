@@ -1,4 +1,4 @@
-# Install script for directory: /home/kiefer/CLionProjects/COMP4981-2024-Assignment1v4
+# Install script for directory: /home/main/Desktop/BCIT_CST_2024/datacomm_2024/assignment1-jan9-2024
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -29,7 +29,7 @@ endif()
 
 # Install shared libraries without execute permission?
 if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
-  set(CMAKE_INSTALL_SO_NO_EXE "0")
+  set(CMAKE_INSTALL_SO_NO_EXE "1")
 endif()
 
 # Is this installation the result of a crosscompile?
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/kiefer/CLionProjects/COMP4981-2024-Assignment1v4/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/main/Desktop/BCIT_CST_2024/datacomm_2024/assignment1-jan9-2024/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

@@ -1,4 +1,0 @@
-/home/main/Desktop/BCIT_CST_2024/datacomm_2024/assignment1-jan9-2024/cmake-build-debug/CMakeFiles/main.dir
-/home/main/Desktop/BCIT_CST_2024/datacomm_2024/assignment1-jan9-2024/cmake-build-debug/CMakeFiles/format.dir
-/home/main/Desktop/BCIT_CST_2024/datacomm_2024/assignment1-jan9-2024/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/main/Desktop/BCIT_CST_2024/datacomm_2024/assignment1-jan9-2024/cmake-build-debug/CMakeFiles/rebuild_cache.dir
