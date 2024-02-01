@@ -1,5 +1,5 @@
-/home/kiefer/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -G "CodeBlocks - Unix Makefiles" -S /home/kiefer/CLionProjects/COMP4981-2024-Assignment1v4 -B /home/kiefer/CLionProjects/COMP4981-2024-Assignment1v4/cmake-build-debug
--- The C compiler identification is Clang 16.0.6
+/snap/clion/263/bin/cmake/linux/x64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/snap/clion/263/bin/ninja/linux/x64/ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -G Ninja -S /home/main/Desktop/BCIT_CST_2024/datacomm_2024/assignment1-jan9-2024 -B /home/main/Desktop/BCIT_CST_2024/datacomm_2024/assignment1-jan9-2024/cmake-build-debug
+-- The C compiler identification is Clang 17.0.6
 -- Detecting C compiler ABI info
 -- Detecting C compiler ABI info - done
 -- Check for working C compiler: /usr/bin/clang - skipped
@@ -8,7 +8,7 @@
 -- Compiler being used: /usr/bin/clang
 C Compiler: /usr/bin/clang
 COMPILER_NAME: clang
--- Configuring done (0.3s)
+-- Configuring done (0.8s)
 -- Generating done (0.0s)
 CMake Warning:
   Manually-specified variables were not used by the project:
@@ -16,4 +16,4 @@ CMake Warning:
     CMAKE_CXX_COMPILER
 
 
--- Build files have been written to: /home/kiefer/CLionProjects/COMP4981-2024-Assignment1v4/cmake-build-debug
+-- Build files have been written to: /home/main/Desktop/BCIT_CST_2024/datacomm_2024/assignment1-jan9-2024/cmake-build-debug
