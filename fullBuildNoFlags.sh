@@ -5,3 +5,5 @@
 ./change-compiler.sh -c clang
 
 ./build.sh
+
+cp -r ./html ./build
