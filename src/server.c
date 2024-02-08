@@ -1,3 +1,4 @@
+// temp save server.c
 
 #include "../include/server.h"
 #include <arpa/inet.h>
@@ -42,7 +43,7 @@ int server_setup(char *passedServerInfo[]) {
 
   handle_connection(newServer.fd, clients, &numClients);
 
-  socket_close(newServer);
+  server_close(newServer);
   return 0;
 }
 
@@ -148,7 +149,9 @@ int handle_connection(int server_fd, struct clientInformation clients[],
         fds[*numClients - 1].fd = client_fd;
         // wait for any clients to give input
         fds[*numClients - 1].events = POLLIN;
-        get_req_response(client_fd);
+        if (get_req_response(client_fd) == -1) {
+          client_close(client_fd);
+        }
       }
     }
 
@@ -186,7 +189,7 @@ int handle_connection(int server_fd, struct clientInformation clients[],
   return 1;
 }
 
-int socket_close(struct serverInformation activeServer) {
+int server_close(struct serverInformation activeServer) {
   if (close(activeServer.fd) == -1) {
     perror("close failed");
     exit(EXIT_FAILURE);
@@ -195,29 +198,77 @@ int socket_close(struct serverInformation activeServer) {
   return 0;
 }
 
-// replace with ethan code later
-void get_req_response(int client_socket) {
+int client_close(int activeClient) {
+  if (close(activeClient) == -1) {
+    perror("close failed");
+    exit(EXIT_FAILURE);
+  }
+  printf("Closing the client.\n");
+  return 0;
+}
+
+int send_response(int client_socket, const char *content) {
+  char response[MAX_BUFFER_SIZE];
+  snprintf(response, MAX_BUFFER_SIZE,
+           "HTTP/1.1 200 OK\r\nContent-Length: %ld\r\n\r\n%s",
+           (long)strlen(content), content);
+  if (send(client_socket, response, strlen(response), 0) == -1) {
+    perror("Error sending response");
+    return -1;
+  }
+  return 0;
+}
+
+int get_req_response(int client_socket) {
   // Open and read the HTML file
   FILE *html_file = fopen("./index.html", "re");
   char buffer[MAX_BUFFER_SIZE];
   size_t bytesRead;
+  size_t totalBytesRead = 0;
+  char *html_content;
 
   if (html_file == NULL) {
     perror("Error opening HTML file");
-    return;
+    return -1;
   }
 
-  // Read and send the HTML content
+  // read html file
   while ((bytesRead = fread(buffer, 1, sizeof(buffer), html_file)) > 0) {
-    // Check if the client is still connected
-    if (send(client_socket, buffer, bytesRead, 0) == -1) {
-      perror("Error sending HTML content");
-      break;
-    }
+    totalBytesRead += bytesRead;
+  }
+  fclose(html_file);
+
+  // allocate memory for the HTML
+  html_content = (char *)malloc(totalBytesRead + 1);
+  if (html_content == NULL) {
+    perror("Error allocating memory");
+    return -1;
   }
 
-  // Close the file
+  // read HTML content again to store it in html_content
+  html_file = fopen("./index.html", "re");
+  if (html_file == NULL) {
+    perror("Error opening HTML file");
+    free(html_content);
+    return -1;
+  }
+
+  totalBytesRead = 0;
+  while ((bytesRead = fread(html_content + totalBytesRead, 1, MAX_BUFFER_SIZE,
+                            html_file)) > 0) {
+    totalBytesRead += bytesRead;
+  }
+  html_content[totalBytesRead] = '\0';
   fclose(html_file);
+
+  // send the HTTP response
+  if (send_response(client_socket, html_content) == -1) {
+    free(html_content);
+    return -1;
+  }
+
+  free(html_content);
+  return 0;
 }
 
 #include "server.h"
