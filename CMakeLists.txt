@@ -17,17 +17,23 @@ list(APPEND HEADERS ${CMAKE_SOURCE_DIR}/include/server.h)
 list(APPEND SOURCES ${CMAKE_SOURCE_DIR}/src/server.c)
 list(APPEND HEADERS ${CMAKE_SOURCE_DIR}/include/client.h)
 list(APPEND SOURCES ${CMAKE_SOURCE_DIR}/src/client.c)
+list(APPEND HEADERS ${CMAKE_SOURCE_DIR}/include/stringTools.h)
+list(APPEND SOURCES ${CMAKE_SOURCE_DIR}/src/stringTools.c)
+list(APPEND HEADERS ${CMAKE_SOURCE_DIR}/include/fileTools.h)
 
 set(main_SOURCES
     ${CMAKE_SOURCE_DIR}/src/main.c
     ${CMAKE_SOURCE_DIR}/src/server.c
     ${CMAKE_SOURCE_DIR}/src/client.c
+    ${CMAKE_SOURCE_DIR}/src/stringTools.c
 )
 
 set(main_HEADERS
     ${CMAKE_SOURCE_DIR}/include/main.h
     ${CMAKE_SOURCE_DIR}/include/server.h
     ${CMAKE_SOURCE_DIR}/include/client.h
+    ${CMAKE_SOURCE_DIR}/include/stringTools.h
+    ${CMAKE_SOURCE_DIR}/include/fileTools.h
 )
 
 add_executable(main ${main_SOURCES})

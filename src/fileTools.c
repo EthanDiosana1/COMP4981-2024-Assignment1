@@ -30,7 +30,7 @@ struct fileData *initializeFileDataStruct(int fileNameLength, char *fileName, lo
     // If invalid fileNameLength, exit with error.
     if(fileNameLength <= 0)
     {
-        char errorMSG[] = "Invalid fileNameLength: %d\n";
+        const char errorMSG[] = "Invalid fileNameLength: %d\n";
         fprintf(stderr, errorMSG, fileNameLength);
         exit(EXIT_FAILURE);
     }
@@ -38,7 +38,7 @@ struct fileData *initializeFileDataStruct(int fileNameLength, char *fileName, lo
     // If invalid contentLength, exit with error.
     if(contentLength < 0)
     {
-        char errorMSG[] = "Invalid contentLength: %d\n";
+        const char errorMSG[] = "Invalid contentLength: %ld\n";
         fprintf(stderr, errorMSG, contentLength);
         exit(EXIT_FAILURE);
     }
@@ -112,7 +112,7 @@ struct fileData *getFileDataFromFilePath(char *filePath)
     fseek(file, 0, SEEK_SET);
 
     // Allocate memory for the content.
-    content = (char *)malloc(contentLength + 1);
+    content = (char *)malloc((unsigned long) (contentLength + 1));
 
     // If content failed to allocate, exit with error.
     if(!content)
@@ -122,14 +122,14 @@ struct fileData *getFileDataFromFilePath(char *filePath)
     }
 
     // Read and store the content.
-    fread(content, 1, contentLength, file);
+    fread(content, 1, (unsigned long)contentLength, file);
     content[contentLength] = '\0';
 
     // Get the file name.
     fileName       = getLastToken(filePath, "/");
     fileNameLength = (int)strlen(fileName);
 
-    fileData = initializeFileDataStruct(fileNameLength, fileName, contentLength, content);
+    fileData = initializeFileDataStruct(fileNameLength, fileName, (long)contentLength, content);
 
     return fileData;
 }
