@@ -221,7 +221,7 @@ int send_response(int client_socket, const char *content) {
 
 int get_req_response(int client_socket) {
   // Open and read the HTML file
-  FILE *html_file = fopen("./index.html", "re");
+  FILE *html_file = fopen("./html/index.html", "re");
   char buffer[MAX_BUFFER_SIZE];
   size_t bytesRead;
   size_t totalBytesRead = 0;
