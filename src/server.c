@@ -270,5 +270,3 @@ int get_req_response(int client_socket) {
   free(html_content);
   return 0;
 }
-
-#include "server.h"
