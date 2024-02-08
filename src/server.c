@@ -56,7 +56,6 @@ int socket_create(void) {
     perror("Socket create failed");
     exit(EXIT_FAILURE);
   }
-
   return serverSocket;
 }
 
@@ -74,20 +73,15 @@ int socket_bind(struct serverInformation activeServer) {
     return -1;
   }
 
-  // Convert the port from string to integer
   port = (int)strtol(activeServer.port, &endptr, decimalBase);
 
-  // Check for errors during conversion
   if (*endptr != '\0' && *endptr != '\n') {
     perror("Invalid port number");
-    // Handle the error accordingly
     return -1;
   }
 
-  // Now 'port' contains the converted value
   server_address.sin_port = htons((uint16_t)port);
 
-  // Bind the socket to the specified address
   if (bind(activeServer.fd, (struct sockaddr *)&server_address,
            sizeof(server_address)) == -1) {
     perror("Bind failed");
@@ -97,7 +91,6 @@ int socket_bind(struct serverInformation activeServer) {
   printf("Socket bound successfully to %s:%s.\n", activeServer.ip,
          activeServer.port);
 
-  // Return success
   return 0;
 }
 
@@ -107,23 +100,27 @@ void start_listen(int server_fd) {
     close(server_fd);
     exit(EXIT_FAILURE);
   }
-
   printf("Listening for incoming connections...\n");
 }
 
-// set up io multiplexing using poll
-
+/**
+ * Function handles main logic loop for ready client sockets using IO
+ * multiplexing
+ * @param server_fd server socket
+ * @param clients array of client socket fds
+ * @param numClients number of clients
+ * @return 1 on success
+ */
 int handle_connection(int server_fd, struct clientInformation clients[],
                       int *numClients) {
   while (!exit_flag) {
-    // Add all active clients to the pollfd array
     int activity;
     for (int i = 1; i < *numClients; i++) {
       fds[i].fd = clients[i].fd;
       fds[i].events = POLLIN;
     }
 
-    // Call poll to wait for events (incoming data or new connections)
+    // poll used for IO multiplexing
     activity = poll(fds, (nfds_t)*numClients, -1); // -1 means wait indefinitely
 
     if (activity == -1) {
@@ -131,31 +128,30 @@ int handle_connection(int server_fd, struct clientInformation clients[],
       exit(EXIT_FAILURE);
     }
 
-    // Check for new connection on the main server socket
+    // check for new connection on the main server socket
     if (fds[0].revents & POLLIN) {
-      // Accept the new connection and add the client to the array
       int client_fd = accept(server_fd, NULL, NULL);
       if (client_fd == -1) {
         perror("accept failed");
         // Handle error if needed
       } else {
-        // Add the new client to the array
         printf("New client: adding to array\n");
         clients[*numClients].fd = client_fd;
-        // Initialize any other client-specific information if needed
+        // TODO add to client struct here when ready using clients[*numClients]
         (*numClients)++;
 
-        // Add the new client to the pollfd array
         fds[*numClients - 1].fd = client_fd;
-        // wait for any clients to give input
+
+        // waits for next input from any client
         fds[*numClients - 1].events = POLLIN;
+        // TODO first send error response (404, res not found) then close
         if (get_req_response(client_fd) == -1) {
           client_close(client_fd);
         }
       }
     }
 
-    // Check for data on existing clients
+    // check if any client is ready to send a response to
     for (int i = 1; i < *numClients; ++i) {
       if (fds[i].revents & POLLIN) {
         char buffer[MAX_BUFFER_SIZE];
@@ -164,23 +160,19 @@ int handle_connection(int server_fd, struct clientInformation clients[],
         // read in req
         bytesRead = recv(clients[i].fd, buffer, sizeof(buffer), 0);
         if (bytesRead == 0) {
-          // client dcs
           printf("Client disconnected: %d\n", clients[i].fd);
           close(clients[i].fd);
           for (int j = i; j < *numClients - 1; ++j) {
             clients[j] = clients[j + 1];
             fds[j] = fds[j + 1];
           }
-
           (*numClients)--;
         } else if (bytesRead < 0) {
-          // handle other recv errors
           perror("recv failed");
-          // add more error handling if needed
         } else {
-          // process request
-          printf("%s\n", buffer);
-          // send back req as body (replace with struct)
+          // TODO: parse req here
+          printf("Request::\n%s\n", buffer);
+          // send back req
           get_req_response(clients[i].fd);
         }
       }
@@ -189,6 +181,11 @@ int handle_connection(int server_fd, struct clientInformation clients[],
   return 1;
 }
 
+/**
+ * Function to close the given server socket
+ * @param activeServer server socket fd
+ * @return 0 if success
+ */
 int server_close(struct serverInformation activeServer) {
   if (close(activeServer.fd) == -1) {
     perror("close failed");
@@ -198,6 +195,11 @@ int server_close(struct serverInformation activeServer) {
   return 0;
 }
 
+/**
+ * Function to close a client socket
+ * @param activeClient client socket fd
+ * @return 0 if success
+ */
 int client_close(int activeClient) {
   if (close(activeClient) == -1) {
     perror("close failed");
@@ -207,6 +209,12 @@ int client_close(int activeClient) {
   return 0;
 }
 
+/**
+ * Function to construct the response and send to client socket (todo breakdown)
+ * @param client_socket client to send the response to
+ * @param content content of the resource requested
+ * @return 0 if success
+ */
 int send_response(int client_socket, const char *content) {
   char response[MAX_BUFFER_SIZE];
   snprintf(response, MAX_BUFFER_SIZE,
@@ -219,8 +227,13 @@ int send_response(int client_socket, const char *content) {
   return 0;
 }
 
+/**
+ * Function to read the resource, save the resource into a malloc, send the resource back to the client (todo breakdown into funcs)
+ * @param client_socket client socket that sends the req
+ * @return 0 if success
+ */
 int get_req_response(int client_socket) {
-  // Open and read the HTML file
+  // todo remove hardcoded "./index.html" fopen when relevant modules are available to parse req
   FILE *html_file = fopen("./index.html", "re");
   char buffer[MAX_BUFFER_SIZE];
   size_t bytesRead;
@@ -232,7 +245,7 @@ int get_req_response(int client_socket) {
     return -1;
   }
 
-  // read html file
+  // read for size of file
   while ((bytesRead = fread(buffer, 1, sizeof(buffer), html_file)) > 0) {
     totalBytesRead += bytesRead;
   }
@@ -254,6 +267,8 @@ int get_req_response(int client_socket) {
   }
 
   totalBytesRead = 0;
+
+  // read the file into html_content
   while ((bytesRead = fread(html_content + totalBytesRead, 1, MAX_BUFFER_SIZE,
                             html_file)) > 0) {
     totalBytesRead += bytesRead;
@@ -261,7 +276,7 @@ int get_req_response(int client_socket) {
   html_content[totalBytesRead] = '\0';
   fclose(html_file);
 
-  // send the HTTP response
+  // construct the response and send
   if (send_response(client_socket, html_content) == -1) {
     free(html_content);
     return -1;
