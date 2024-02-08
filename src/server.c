@@ -10,12 +10,12 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#define MAX_BUFFER_SIZE 1024
+
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 static volatile sig_atomic_t exit_flag = 0;
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 static struct pollfd fds[SOMAXCONN];
-
-#define MAX_BUFFER_SIZE 1024
 
 void server(void) { printf("SERVER\n"); }
 

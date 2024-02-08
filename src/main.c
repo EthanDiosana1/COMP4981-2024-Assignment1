@@ -8,6 +8,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#define USAGE "Usage: -t type -i ip -p port\n"
+
 // struct to hold the values for
 struct arguments {
   char *type;
@@ -86,6 +88,12 @@ int handle_args(struct arguments passedArgs) {
   } else if (strcmp(passedArgs.type, "accept") == 0) {
     // server
     server_setup(serverInformation);
+  } else {
+    fprintf(stderr,
+            "Error: Invalid type: %s\n"
+            "Available: 'connect', 'accept'\n%s",
+            passedArgs.type, USAGE);
+    exit(EXIT_FAILURE);
   }
   return 0;
 }
