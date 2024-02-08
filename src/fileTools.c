@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
 
 struct fileData
 {
@@ -146,3 +147,5 @@ void printFileDataStruct(const struct fileData *fileData)
            fileData->contentLength,
            fileData->content);
 }
+
+
