@@ -1,6 +1,7 @@
 // temp save server.c
 
 #include "../include/server.h"
+#include "../include/stringTools.h"
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <signal.h>
@@ -113,6 +114,8 @@ void start_listen(int server_fd) {
  */
 int handle_connection(int server_fd, struct clientInformation clients[],
                       int *numClients) {
+  TokenAndStr requestFirstLine;
+
   while (!exit_flag) {
     int activity;
     for (int i = 1; i < *numClients; i++) {
@@ -144,10 +147,6 @@ int handle_connection(int server_fd, struct clientInformation clients[],
 
         // waits for next input from any client
         fds[*numClients - 1].events = POLLIN;
-        // TODO first send error response (404, res not found) then close
-        if (get_req_response(client_fd) == -1) {
-          client_close(client_fd);
-        }
       }
     }
 
@@ -170,8 +169,15 @@ int handle_connection(int server_fd, struct clientInformation clients[],
         } else if (bytesRead < 0) {
           perror("recv failed");
         } else {
-          // TODO: parse req here
           printf("Request::\n%s\n", buffer);
+
+          // TODO: Parse the request into a struct.
+
+          // Get only the first line.
+          requestFirstLine = getFirstToken(buffer, "\n");
+
+          printf("Request first line: %s\n", requestFirstLine.token);
+
           // send back req
           get_req_response(clients[i].fd);
         }
@@ -228,13 +234,15 @@ int send_response(int client_socket, const char *content) {
 }
 
 /**
- * Function to read the resource, save the resource into a malloc, send the resource back to the client (todo breakdown into funcs)
+ * Function to read the resource, save the resource into a malloc, send the
+ * resource back to the client (todo breakdown into funcs)
  * @param client_socket client socket that sends the req
  * @return 0 if success
  */
 int get_req_response(int client_socket) {
-  // todo remove hardcoded "./index.html" fopen when relevant modules are available to parse req
-  FILE *html_file = fopen("./index.html", "re");
+  // todo remove hardcoded "./index.html" fopen when relevant modules are
+  // available to parse req
+  FILE *html_file = fopen("html/index.html", "re");
   char buffer[MAX_BUFFER_SIZE];
   size_t bytesRead;
   size_t totalBytesRead = 0;

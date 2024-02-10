@@ -9,12 +9,33 @@
 #include <string.h>
 
 /**
- * @brief Returns the final token of a string to be tokenized.
+ * @brief Struct that holds both a token and the original string.
+ *
+ */
+typedef struct {
+  // The token.
+  char *token;
+  // The original string.
+  char *originalStr;
+} TokenAndStr;
+
+/**
+ * @brief Returns a struct containing the final token of a string to be
+ * tokenized.
  * @param string The string to tokenize.
  * @param delim The delimiter.
  * @return last token
  */
-char *getLastToken(const char *string, const char *delim);
+TokenAndStr getLastToken(const char *string, const char *delim);
+
+/**
+ * @brief Returns a struct containing the first token of a string to be
+ * tokenized.
+ * @param string The string to tokenize.
+ * @param delim The delimiter.
+ * @return TokenAndStr struct
+ */
+TokenAndStr getFirstToken(const char *string, const char *delim);
 
 /**
  * @brief Returns the number of tokens from the string.

@@ -13,20 +13,14 @@
 struct HTTPRequest;
 
 /**
- * @brief Enum of HTTP status codes,
- * e.g. 200, 400, 500.
- */
-enum HTTPStatusCodes;
-
-/**
  * @brief Initializes a new HTTP request struct from a string.
  * @param string The string to parse.
- * @return
+ * @return request
  */
 struct HTTPRequest *initializeHTTPRequestFromString(char *string);
 
 /**
- * @bried Initializes a new HTTP request struct.
+ * @brief Initializes a new HTTP request struct.
  * @param method The method, e.g. GET, POST, HEAD
  * @param path The path, e.g. ./index.html
  * @param protocol The protocol, e.g. 1.0, 1.1
@@ -37,7 +31,7 @@ struct HTTPRequest *initializeHTTPRequest(const char *method, const char *path, 
 /**
  * @brief Strips the given string of return characters.
  * @param string The string to strip.
- * @return
+ * @return stripped
  */
 char *stripHTTPRequestReturnCharacters(char *string);
 
