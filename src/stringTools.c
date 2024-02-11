@@ -38,17 +38,17 @@ StringArray tokenizeString(const char *string, const char *delim) {
   int index;
 
   // Use getNumberOfTokens to determine the size of arrays needed.
-  result.numTokens = getNumberOfTokens(string, delim);
+  result.numStrings = getNumberOfTokens(string, delim);
 
   // If number of tokens is zero or less, exit with error.
-  if (result.numTokens == 0) {
+  if (result.numStrings == 0) {
     perror("Number of tokens cannot be less than 1.");
     exit(EXIT_FAILURE);
   }
 
-  result.strings = (char **)malloc(result.numTokens * sizeof(char *));
+  result.strings = (char **)malloc(result.numStrings * sizeof(char *));
   result.stringLengths =
-      (unsigned int *)malloc(result.numTokens * sizeof(unsigned int));
+      (unsigned int *)malloc(result.numStrings * sizeof(unsigned int));
 
   // Duplicate string for safe tokenization.
   stringCopy = strdup(string);
@@ -115,4 +115,24 @@ TokenAndStr getLastToken(const char *string, const char *delim) {
   // and result.originalStr holds the duplicated string that needs to be freed
   // by the caller.
   return result;
+}
+
+char *addCharacterToStart(const char *original, const char *toAdd) {
+  // calculate the length of the resulting string
+  size_t originalLength = strlen(original);
+  size_t toAddLength = strlen(toAdd);
+  size_t returnStringLength = originalLength + toAddLength + 1;
+
+  // allocate memory for the return string
+  char *returnString = (char *)malloc(returnStringLength * sizeof(char));
+  if (returnString == NULL) {
+    perror("Error allocating memory");
+    return NULL;
+  }
+
+  // copy the 'toAdd' string followed by the 'original' string into the return
+  // string
+  strcpy(returnString, toAdd);
+  strcat(returnString, original);
+  return returnString;
 }

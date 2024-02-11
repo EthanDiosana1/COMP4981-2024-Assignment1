@@ -50,9 +50,9 @@ HTTPRequest *initializeHTTPRequestFromString(const char *string) {
   stringArrayStruct = tokenizeString(string, delim);
 
   // After tokenizing the string
-  if (stringArrayStruct.numTokens != NUM_HTTP_REQUEST_TOKENS) {
+  if (stringArrayStruct.numStrings != NUM_HTTP_REQUEST_TOKENS) {
     fprintf(stderr, "Incorrect number of tokens: %u\n",
-            stringArrayStruct.numTokens);
+            stringArrayStruct.numStrings);
 
     exit(EXIT_FAILURE);
   }

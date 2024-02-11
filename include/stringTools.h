@@ -31,8 +31,8 @@ typedef struct {
   /** @brief Pointer to an array of strings. */
   char **strings;
 
-  /** @brief Number of tokens. */
-  unsigned int numTokens;
+  /** @brief Number of strings. */
+  unsigned int numStrings;
 
   /** @brief Int array containing the lengths of the strings in the string
    * array. */
@@ -76,11 +76,11 @@ TokenAndStr getFirstToken(const char *string, const char *delim);
 unsigned int getNumberOfTokens(const char *string, const char *delim);
 
 /**
- * @brief Returns an array of strings from a tokenized string.
- * @param string The string to tokenize.
- * @param delim The delimiter.
- * @return array
+ * @brief Adds a string to the start of a string.
+ * @param original The original string.
+ * @param toAdd The string to add.
+ * @return char *
  */
-char *strTokToArray(const char *string, const char *delim);
+char *addCharacterToStart(const char *original, const char *toAdd);
 
 #endif // STRINGTOOLS_H

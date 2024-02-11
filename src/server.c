@@ -5,7 +5,6 @@
 #include "../include/stringTools.h"
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -240,27 +239,6 @@ int client_close(int activeClient) {
   }
   printf("Closing the client.\n");
   return 0;
-}
-
-// todo move to stringtools
-static char *addCharacterToStart(const char *original, const char *toAdd) {
-  // calculate the length of the resulting string
-  size_t originalLength = strlen(original);
-  size_t toAddLength = strlen(toAdd);
-  size_t returnStringLength = originalLength + toAddLength + 1;
-
-  // allocate memory for the return string
-  char *returnString = (char *)malloc(returnStringLength * sizeof(char));
-  if (returnString == NULL) {
-    perror("Error allocating memory");
-    return NULL;
-  }
-
-  // copy the 'toAdd' string followed by the 'original' string into the return
-  // string
-  strcpy(returnString, toAdd);
-  strcat(returnString, original);
-  return returnString;
 }
 
 /**
