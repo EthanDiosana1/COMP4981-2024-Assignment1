@@ -4,6 +4,7 @@
 #include "../include/httpRequest.h"
 #include "../include/stringTools.h"
 #include <arpa/inet.h>
+#include <ndbm.h>
 #include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,7 +12,6 @@
 #include <sys/poll.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <ndbm.h>
 
 #define MAX_BUFFER_SIZE 1024
 
@@ -182,7 +182,13 @@ int handle_connection(int server_fd, struct clientInformation clients[],
           perror("recv failed");
         } else {
           // todo implement read fully (wait until \r\n\r\n)
-          printf("Request::\n%s\n", buffer);
+          printf("\n\n"
+                 "----- START CLIENT REQUEST ----- "
+                 "\n\n"
+                 "%s\n"
+                 "----- END CLIENT REQUEST ----- \n"
+                 "\n\n",
+                 buffer);
 
           // Get only the first line.
           requestFirstLine = getFirstToken(buffer, "\n");
@@ -447,7 +453,7 @@ int post_req_response(int client_socket, const char *filePath) {
    * Save data
    * Close db
    */
-//  dbm_open("./database/test");
+  //  dbm_open("./database/test");
   if (client_socket == -1) {
     return -1;
   }
