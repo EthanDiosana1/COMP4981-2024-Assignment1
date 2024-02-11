@@ -350,11 +350,12 @@ int get_req_response(int client_socket, const char *filePath) {
 
   // open file
   resource_file = fopen(filePathWithDot, "rbe");
-  free(filePathWithDot);
   if (resource_file == NULL) {
-    perror("Error opening resource file");
+    fprintf(stderr, "Error opening resource file: %s\n", filePathWithDot);
+    free(filePathWithDot);
     return -1;
   }
+  free(filePathWithDot);
 
   // move cursor to the end of the file, read the position in bytes, reset
   // cursor
