@@ -1,6 +1,8 @@
 #ifndef MAIN_SERVER_H
 #define MAIN_SERVER_H
 
+#include <signal.h>
+
 struct serverInformation {
   int fd;
   char *ip;
@@ -18,10 +20,14 @@ int socket_create(void);
 int socket_bind(struct serverInformation server);
 int server_close(struct serverInformation server);
 int client_close(int client);
-int send_response(int client_socket, const char *content);
+int send_response_resource(int client_socket, const char *content,
+                           size_t content_length);
+int send_response_head(int client_socket, size_t content_length);
 void start_listen(int server_fd);
 int handle_connection(int server_fd, struct clientInformation clients[],
                       int *numClients);
-int get_req_response(int client_socket);
+int get_req_response(int client_socket, const char *filePath);
+int head_req_response(int client_socket, const char *filePath);
+int post_req_response(int client_socket, const char *filePath);
 int run_server(void);
 #endif // MAIN_SERVER_H

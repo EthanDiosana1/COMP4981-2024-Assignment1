@@ -15,6 +15,13 @@
 
 #define MAX_BUFFER_SIZE 1024
 
+// todo handle the different cases in the response :: 404, 504, etc
+// todo re-comment code for more clarity
+// todo break down functions into smaller functions to pinpoint errors, etc
+// todo move functions to appropriate modules
+// todo implement read fully --> wait until all bits are read (wait until end of
+// req \r\n\r\n for reading)
+
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 static volatile sig_atomic_t exit_flag = 0;
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
@@ -40,7 +47,6 @@ int server_setup(char *passedServerInfo[]) {
   // Initialize the main server socket in the pollfd array
   fds[0].fd = newServer.fd;
   fds[0].events = POLLIN;
-
   numClients = 1; // Number of clients (starting with the server itself)
 
   handle_connection(newServer.fd, clients, &numClients);
@@ -175,6 +181,7 @@ int handle_connection(int server_fd, struct clientInformation clients[],
         } else if (bytesRead < 0) {
           perror("recv failed");
         } else {
+          // todo implement read fully (wait until \r\n\r\n)
           printf("Request::\n%s\n", buffer);
 
           // Get only the first line.
@@ -182,13 +189,24 @@ int handle_connection(int server_fd, struct clientInformation clients[],
 
           printf("Request first line: %s\n", requestFirstLine.token);
 
-          // TODO: Parse the request into a struct.
           httpRequest = initializeHTTPRequestFromString(requestFirstLine.token);
-
           printHTTPRequestStruct(httpRequest);
 
-          // send back req
-          get_req_response(clients[i].fd);
+          // handle request
+          if (strcmp(httpRequest->method, "GET") == 0) {
+            get_req_response(clients[i].fd, httpRequest->path);
+
+          } else if (strcmp(httpRequest->method, "HEAD") == 0) {
+            head_req_response(clients[i].fd, httpRequest->path);
+
+          } else if (strcmp(httpRequest->method, "POST") == 0) {
+            post_req_response(clients[i].fd, httpRequest->path);
+
+          } else {
+            // default err handling
+            perror("Unknown method type");
+            exit(EXIT_FAILURE);
+          }
         }
       }
     }
@@ -224,81 +242,227 @@ int client_close(int activeClient) {
   return 0;
 }
 
+// todo move to stringtools
+static char *addCharacterToStart(const char *original, const char *toAdd) {
+  // calculate the length of the resulting string
+  size_t originalLength = strlen(original);
+  size_t toAddLength = strlen(toAdd);
+  size_t returnStringLength = originalLength + toAddLength + 1;
+
+  // allocate memory for the return string
+  char *returnString = (char *)malloc(returnStringLength * sizeof(char));
+  if (returnString == NULL) {
+    perror("Error allocating memory");
+    return NULL;
+  }
+
+  // copy the 'toAdd' string followed by the 'original' string into the return
+  // string
+  strcpy(returnString, toAdd);
+  strcat(returnString, original);
+  return returnString;
+}
+
 /**
- * Function to construct the response and send to client socket (todo breakdown)
- * @param client_socket client to send the response to
- * @param content content of the resource requested
- * @return 0 if success
+ * Function to check if a filePath is the root. If it is the root, then it will
+ * change the verified_path to a default value
+ * @param filePath path of the resource
+ * @param verified_path the file path of either ./html/index.html or a valid
+ * request
+ * @return 0 if default, 1 if request
  */
-int send_response(int client_socket, const char *content) {
-  char response[MAX_BUFFER_SIZE];
-  snprintf(response, MAX_BUFFER_SIZE,
-           "HTTP/1.1 200 OK\r\nContent-Length: %ld\r\n\r\n%s",
-           (long)strlen(content), content);
-  if (send(client_socket, response, strlen(response), 0) == -1) {
-    perror("Error sending response");
-    return -1;
+// todo move to server.h, remove static
+static int checkIfRoot(const char *filePath, char *verified_path) {
+  if (strcmp(filePath, "/") == 0) {
+    strcpy(verified_path, "/html/index.html");
+  } else {
+    strcpy(verified_path, filePath);
+    return 1;
   }
   return 0;
 }
 
 /**
+ * Function to construct the response and send to client socket from a given
+ * resource Only called when a resource is confirmed to exist
+ * @param client_socket client to send the response to
+ * @param content content of the resource requested
+ * @return 0 if success
+ */
+// todo add status codes and handle each situation based on that
+int send_response_resource(int client_socket, const char *content,
+                           size_t content_length) {
+  char response[MAX_BUFFER_SIZE];
+  size_t total_sent = 0;
+  snprintf(response, MAX_BUFFER_SIZE,
+           "HTTP/1.1 200 OK\r\nContent-Length: %zu\r\n\r\n", content_length);
+
+  // send the response header
+  if (send(client_socket, response, strlen(response), 0) == -1) {
+    perror("Error sending response header");
+    return -1;
+  }
+
+  // send content
+  while (total_sent < content_length) {
+    ssize_t sent = send(client_socket, content + total_sent,
+                        content_length - total_sent, 0);
+    if (sent == -1) {
+      perror("Error sending content");
+      return -1;
+    }
+    total_sent += (size_t)sent;
+  }
+  return 0;
+}
+
+/**
+ * Function to construct and send the head request response
+ * @param client_socket the client that will get the response
+ * @param content_length the length of the content in the requested resource
+ * @return 0 if success
+ */ // todo <-- additional status codes
+int send_response_head(int client_socket, size_t content_length) {
+  char response[MAX_BUFFER_SIZE];
+  snprintf(response, MAX_BUFFER_SIZE,
+           "HTTP/1.1 200 OK\r\nContent-Length: %zu\r\n\r\n", content_length);
+
+  // Send the response header
+  if (send(client_socket, response, strlen(response), 0) == -1) {
+    perror("Error sending response header");
+    return -1;
+  }
+
+  return 0;
+}
+
+/**
  * Function to read the resource, save the resource into a malloc, send the
- * resource back to the client (todo breakdown into funcs)
+ * resource back to the client
  * @param client_socket client socket that sends the req
  * @return 0 if success
  */
-int get_req_response(int client_socket) {
-  // todo remove hardcoded "./index.html" fopen when relevant modules are
-  // available to parse req
-  FILE *html_file = fopen("html/index.html", "re");
-  char buffer[MAX_BUFFER_SIZE];
+// todo break down into smaller functions
+int get_req_response(int client_socket, const char *filePath) {
+  char *filePathWithDot;
+  FILE *resource_file;
+  long totalBytesRead;
+  char *file_content;
+  char verified_path[MAX_BUFFER_SIZE];
   size_t bytesRead;
-  size_t totalBytesRead = 0;
-  char *html_content;
 
-  if (html_file == NULL) {
-    perror("Error opening HTML file");
+  // todo shift all get/head functions into a single function to port to both
+  // check if filePath is root
+  checkIfRoot(filePath, verified_path);
+
+  // append "." to filePathWithDot
+  filePathWithDot = addCharacterToStart(verified_path, ".");
+  if (filePathWithDot == NULL) {
+    perror(". character not added");
     return -1;
   }
 
-  // read for size of file
-  while ((bytesRead = fread(buffer, 1, sizeof(buffer), html_file)) > 0) {
-    totalBytesRead += bytesRead;
+  // open file
+  resource_file = fopen(filePathWithDot, "rbe");
+  free(filePathWithDot);
+  if (resource_file == NULL) {
+    perror("Error opening resource file");
+    return -1;
   }
-  fclose(html_file);
 
-  // allocate memory for the HTML
-  html_content = (char *)malloc(totalBytesRead + 1);
-  if (html_content == NULL) {
+  // move cursor to the end of the file, read the position in bytes, reset
+  // cursor
+  fseek(resource_file, 0, SEEK_END);
+  totalBytesRead = ftell(resource_file);
+  fseek(resource_file, 0, SEEK_SET);
+
+  // allocate memory
+  file_content = (char *)malloc((unsigned long)(totalBytesRead + 1));
+  if (file_content == NULL) {
     perror("Error allocating memory");
+    fclose(resource_file);
     return -1;
   }
 
-  // read HTML content again to store it in html_content
-  html_file = fopen("./index.html", "re");
-  if (html_file == NULL) {
-    perror("Error opening HTML file");
-    free(html_content);
+  // read into buffer
+  bytesRead =
+      fread(file_content, 1, (unsigned long)totalBytesRead, resource_file);
+  if ((long)bytesRead != totalBytesRead) {
+    perror("Error reading HTML file");
+    free(file_content);
+    fclose(resource_file);
+    return -1;
+  }
+  fclose(resource_file);
+
+  // create response and send
+  if (send_response_resource(client_socket, file_content, bytesRead) == -1) {
+    free(file_content);
     return -1;
   }
 
-  totalBytesRead = 0;
+  // free resources on success
+  free(file_content);
+  return 0;
+}
 
-  // read the file into html_content
-  while ((bytesRead = fread(html_content + totalBytesRead, 1, MAX_BUFFER_SIZE,
-                            html_file)) > 0) {
-    totalBytesRead += bytesRead;
-  }
-  html_content[totalBytesRead] = '\0';
-  fclose(html_file);
+/**
+ * Function to handle a HEAD request and send back the header
+ * @return 0 if success
+ */
+int head_req_response(int client_socket, const char *filePath) {
+  /*
+   * Steps:
+   * Check if root
+   * filePathWithDot
+   * open file (check if exists)
+   * close file
+   * send response based on this
+   */
+  char *filePathWithDot;
+  FILE *resource_file;
+  char verified_path[MAX_BUFFER_SIZE];
+  long totalBytesRead;
 
-  // construct the response and send
-  if (send_response(client_socket, html_content) == -1) {
-    free(html_content);
+  // check if filePath is root
+  checkIfRoot(filePath, verified_path);
+
+  // append "." to filePathWithDot
+  filePathWithDot = addCharacterToStart(verified_path, ".");
+  if (filePathWithDot == NULL) {
+    perror(". character not added");
     return -1;
   }
 
-  free(html_content);
+  // open file
+  resource_file = fopen(filePathWithDot, "rbe");
+  free(filePathWithDot);
+  if (resource_file == NULL) {
+    perror("Error opening resource file");
+    return -1;
+  }
+
+  fseek(resource_file, 0, SEEK_END);
+  totalBytesRead = ftell(resource_file);
+  fseek(resource_file, 0, SEEK_SET);
+
+  // send header
+  send_response_head(client_socket, (size_t)totalBytesRead);
+
+  // close file
+  fclose(resource_file);
+
+  return 0;
+}
+
+/**
+ * Function to handle post requests
+ * @return wheee
+ */
+int post_req_response(int client_socket, const char *filePath) {
+  if (client_socket == -1) {
+    return -1;
+  }
+  printf("%s", filePath);
   return 0;
 }
