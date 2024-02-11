@@ -6,4 +6,4 @@
 
 ./build.sh
 
-cp -r ./html ./build
+cp -r ./server_files ./build
