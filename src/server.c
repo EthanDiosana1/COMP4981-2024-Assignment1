@@ -1,6 +1,7 @@
 // temp save server.c
 
 #include "../include/server.h"
+#include "../include/httpRequest.h"
 #include "../include/stringTools.h"
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -115,6 +116,11 @@ void start_listen(int server_fd) {
 int handle_connection(int server_fd, struct clientInformation clients[],
                       int *numClients) {
   TokenAndStr requestFirstLine;
+  const HTTPRequest *httpRequest;
+
+  // To silence the errors :/
+  httpRequest = NULL;
+  printHTTPRequestStruct(httpRequest);
 
   while (!exit_flag) {
     int activity;
@@ -171,12 +177,15 @@ int handle_connection(int server_fd, struct clientInformation clients[],
         } else {
           printf("Request::\n%s\n", buffer);
 
-          // TODO: Parse the request into a struct.
-
           // Get only the first line.
           requestFirstLine = getFirstToken(buffer, "\n");
 
           printf("Request first line: %s\n", requestFirstLine.token);
+
+          // TODO: Parse the request into a struct.
+          httpRequest = initializeHTTPRequestFromString(requestFirstLine.token);
+
+          printHTTPRequestStruct(httpRequest);
 
           // send back req
           get_req_response(clients[i].fd);
@@ -293,5 +302,3 @@ int get_req_response(int client_socket) {
   free(html_content);
   return 0;
 }
-
-#include "server.h"

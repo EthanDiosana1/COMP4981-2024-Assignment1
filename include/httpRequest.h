@@ -10,14 +10,23 @@
 /**
  * @brief Standard struct for HTTP requests.
  */
-struct HTTPRequest;
+typedef struct {
+  /** @brief The method, e.g. GET, POST, HEAD */
+  char *method;
+
+  /** @brief The requested file path. */
+  char *path;
+
+  /** @brief The protocol, e.g. HTTP/1.1 */
+  char *protocol;
+} HTTPRequest;
 
 /**
  * @brief Initializes a new HTTP request struct from a string.
  * @param string The string to parse.
  * @return request
  */
-struct HTTPRequest *initializeHTTPRequestFromString(char *string);
+HTTPRequest *initializeHTTPRequestFromString(const char *string);
 
 /**
  * @brief Initializes a new HTTP request struct.
@@ -26,14 +35,15 @@ struct HTTPRequest *initializeHTTPRequestFromString(char *string);
  * @param protocol The protocol, e.g. 1.0, 1.1
  * @return struct HTTPRequest
  */
-struct HTTPRequest *initializeHTTPRequest(const char *method, const char *path, const char *protocol);
+HTTPRequest initializeHTTPRequest(const char *method, const char *path,
+                                  const char *protocol);
 
 /**
  * @brief Strips the given string of return characters.
  * @param string The string to strip.
  * @return stripped
  */
-char *stripHTTPRequestReturnCharacters(char *string);
+char *stripHTTPRequestReturnCharacters(const char *string);
 
 /**
  * @brief Returns true if the given HTTP method is valid.
@@ -41,12 +51,12 @@ char *stripHTTPRequestReturnCharacters(char *string);
  * @param method The HTTP request
  * @return true or false
  */
-bool isValidHTTPMethod(char *method);
+bool isValidHTTPMethod(const char *method);
 
 /**
  * @brief Prints the values of an HTTPRequest struct.
  * @param request The struct to print.
  */
-void printHTTPRequestStruct(const struct HTTPRequest *request);
+void printHTTPRequestStruct(const HTTPRequest *request);
 
-#endif    // HTTPREQUEST_H
+#endif // HTTPREQUEST_H

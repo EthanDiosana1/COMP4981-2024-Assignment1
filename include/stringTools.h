@@ -13,11 +13,41 @@
  *
  */
 typedef struct {
-  // The token.
+  /** @brief The token. */
   char *token;
-  // The original string.
+
+  /** @brief The original string */
   char *originalStr;
+
 } TokenAndStr;
+
+/**
+ * @brief Struct that holds an array of strings.
+ * @author Ethan D.
+ *
+ * Helps with tokenization.
+ */
+typedef struct {
+  /** @brief Pointer to an array of strings. */
+  char **strings;
+
+  /** @brief Number of tokens. */
+  unsigned int numTokens;
+
+  /** @brief Int array containing the lengths of the strings in the string
+   * array. */
+  unsigned int *stringLengths;
+
+} StringArray;
+
+/**
+ * @brief Returns a struct StringArray from a string.
+ * Tokenizes the string based on the delimiter and returns a struct.
+ * @param string The string to tokenize.
+ * @param delim The delimiter to tokenize the string with.
+ * @return struct StringArray
+ */
+StringArray tokenizeString(const char *string, const char *delim);
 
 /**
  * @brief Returns a struct containing the final token of a string to be
@@ -43,7 +73,7 @@ TokenAndStr getFirstToken(const char *string, const char *delim);
  * @param delim The delimiter.
  * @return number of tokens
  */
-int getNumberOfTokens(const char *string, const char *delim);
+unsigned int getNumberOfTokens(const char *string, const char *delim);
 
 /**
  * @brief Returns an array of strings from a tokenized string.

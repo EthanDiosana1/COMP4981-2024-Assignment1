@@ -2,11 +2,12 @@
 // Created by main on 28/01/24.
 //
 #include "stringTools.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-int getNumberOfTokens(const char *string, const char *delim) {
-  int count = 0;
+unsigned int getNumberOfTokens(const char *string, const char *delim) {
+  unsigned int count = 0;
   char *strcopy;
   const char *token;
   char *savePtr;
@@ -27,6 +28,50 @@ int getNumberOfTokens(const char *string, const char *delim) {
   free(strcopy);
 
   return count;
+}
+
+StringArray tokenizeString(const char *string, const char *delim) {
+  StringArray result;
+  char *stringCopy;
+  const char *token;
+  char *savePtr;
+  int index;
+
+  // Use getNumberOfTokens to determine the size of arrays needed.
+  result.numTokens = getNumberOfTokens(string, delim);
+
+  // If number of tokens is zero or less, exit with error.
+  if (result.numTokens == 0) {
+    perror("Number of tokens cannot be less than 1.");
+    exit(EXIT_FAILURE);
+  }
+
+  result.strings = (char **)malloc(result.numTokens * sizeof(char *));
+  result.stringLengths =
+      (unsigned int *)malloc(result.numTokens * sizeof(unsigned int));
+
+  // Duplicate string for safe tokenization.
+  stringCopy = strdup(string);
+  index = 0;
+
+  // Get the first token
+  token = strtok_r(stringCopy, delim, &savePtr);
+
+  // Tokenize the string
+  while (token != NULL) {
+    // Duplicate token
+    result.strings[index] = strdup(token);
+    // Store token length
+    result.stringLengths[index] = (unsigned int)strlen(token);
+    index++;
+
+    // Get the next token
+    token = strtok_r(NULL, delim, &savePtr);
+  }
+
+  free(stringCopy); // Free the duplicated string
+
+  return result;
 }
 
 TokenAndStr getFirstToken(const char *string, const char *delim) {
