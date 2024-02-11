@@ -252,7 +252,8 @@ int client_close(int activeClient) {
 // todo move to server.h, remove static
 static int checkIfRoot(const char *filePath, char *verified_path) {
   if (strcmp(filePath, "/") == 0) {
-    strcpy(verified_path, "/html/index.html");
+    printf("Requesting default file path...");
+    strcpy(verified_path, "server_files/html/index.html");
   } else {
     strcpy(verified_path, filePath);
     return 1;
