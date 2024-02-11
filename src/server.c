@@ -11,6 +11,7 @@
 #include <sys/poll.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <ndbm.h>
 
 #define MAX_BUFFER_SIZE 1024
 
@@ -438,6 +439,14 @@ int head_req_response(int client_socket, const char *filePath) {
  * @return wheee
  */
 int post_req_response(int client_socket, const char *filePath) {
+  /*
+   * Steps:
+   * Check if the data is valid
+   * Open db
+   * Save data
+   * Close db
+   */
+//  dbm_open("./database/test");
   if (client_socket == -1) {
     return -1;
   }
