@@ -3,6 +3,7 @@
 
 #include "client.h"
 #include "server.h"
+#include "sigintHandler.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,8 +25,13 @@ int handle_args(struct arguments args);
 
 // drives code
 int main(int argc, char *argv[]) {
+  // Set Ctrl-C override.
+  // NOLINTNEXTLINE
+  signal(SIGINT, sigintHandler);
+
   if (handle_args(parse_args(argc, argv))) {
   }
+
   // else: failstate already
 
   // handle args --> does stuff with the args
