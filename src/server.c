@@ -341,8 +341,8 @@ int get_req_response(int client_socket, const char *filePath) {
   // check if filePath is root
   checkIfRoot(filePath, verified_path);
 
-  // append "." to filePathWithDot
-  filePathWithDot = addCharacterToStart(verified_path, ".");
+  // append "./" to filePathWithDot
+  filePathWithDot = addCharacterToStart(verified_path, "./");
   if (filePathWithDot == NULL) {
     perror(". character not added");
     return -1;
