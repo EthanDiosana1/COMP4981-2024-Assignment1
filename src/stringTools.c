@@ -116,25 +116,3 @@ TokenAndStr getLastToken(const char *string, const char *delim) {
   // by the caller.
   return result;
 }
-
-// char *strTokToArray(const char *string, const char *delim) {
-//   char *strcopy = NULL;
-//   char *token = NULL;
-//   char **tokenArray;
-//   int numTokens;
-//   int count;
-//
-//   // Get the number of tokens.
-//   numTokens = getNumberOfTokens(string, delim);
-//
-//   // Allocate the memory for the token array.
-//   tokenArray = (char **)malloc(sizeof(char *) * (unsigned long) numTokens);
-//
-//   // Tokenize and store in the array.
-//
-//   // Free.
-//   free(strcopy);
-//   free(token);
-//
-//   return tokenArray;
-// }
