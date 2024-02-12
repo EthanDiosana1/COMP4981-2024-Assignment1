@@ -31,6 +31,8 @@ set(main_SOURCES
     ${CMAKE_SOURCE_DIR}/src/stringTools.c
     ${CMAKE_SOURCE_DIR}/src/httpRequest.c
     ${CMAKE_SOURCE_DIR}/src/sigintHandler.c
+        include/globals.h
+        src/globals.c
 )
 
 set(main_HEADERS
