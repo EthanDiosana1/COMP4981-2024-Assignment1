@@ -17,8 +17,8 @@
 #include <unistd.h>
 
 #define MAX_BUFFER_SIZE 1024
-#define STATUS_INTERNAL_SERVER_ERR 500
-// #define STATUS_OK 200
+// #define STATUS_INTERNAL_SERVER_ERR 500
+//  #define STATUS_OK 200
 #define STATUS_RES_CREATED 201
 // todo handle the different cases in the response :: 404, 504, etc
 // todo re-comment code for more clarity
@@ -517,22 +517,21 @@ int head_req_response(int client_socket, const char *filePath) {
 
 int send_response_post(int client_socket, const char *resPath) {
   char response[MAX_BUFFER_SIZE];
-  int status_code =
-      (resPath != NULL) ? STATUS_RES_CREATED : STATUS_INTERNAL_SERVER_ERR;
 
   if (resPath != NULL) {
+    int status_code = STATUS_RES_CREATED;
     snprintf(response, MAX_BUFFER_SIZE,
              "HTTP/1.1 %d Created\r\nLocation: %s\r\n\r\n", status_code,
              resPath);
   } else {
-    snprintf(response, MAX_BUFFER_SIZE,
-             "HTTP/1.1 %d Internal Server Error\r\n\r\n", status_code);
+    return -1;
   }
 
   if (send(client_socket, response, strlen(response), 0) == -1) {
     perror("Error sending response header");
     return -1;
   }
+  printf("Sent over response!\n");
 
   return 0;
 }
@@ -563,7 +562,9 @@ int post_req_response(int client_socket, const char *filePath,
   // Append the given text to the file path.
   appendTextToFile(modifiedFilePath, data);
 
-  free(duped);
+  printf("Sending res back to client\n");
   send_response_post(client_socket, modifiedFilePath);
+  free(duped);
+  close(client_socket);
   return 0;
 }
