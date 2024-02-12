@@ -63,8 +63,11 @@ int server_setup(char *passedServerInfo[]) {
     return 0;
   }
   // bind
-  socket_bind(newServer);
-  // listen <-- io mult
+  if (socket_bind(newServer)) {
+    perror("SOCKET BIND");
+    return -1;
+  }
+
   start_listen(newServer.fd);
 
   // Initialize the main server socket in the pollfd array
