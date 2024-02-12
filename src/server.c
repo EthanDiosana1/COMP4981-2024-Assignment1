@@ -5,6 +5,7 @@
 #include "../include/httpRequest.h"
 #include "../include/stringTools.h"
 #include <arpa/inet.h>
+#include <fcntl.h>
 #include <ndbm.h>
 #include <netinet/in.h>
 #include <signal.h>
@@ -16,7 +17,9 @@
 #include <unistd.h>
 
 #define MAX_BUFFER_SIZE 1024
-
+#define STATUS_INTERNAL_SERVER_ERR 500
+// #define STATUS_OK 200
+#define STATUS_RES_CREATED 201
 // todo handle the different cases in the response :: 404, 504, etc
 // todo re-comment code for more clarity
 // todo break down functions into smaller functions to pinpoint errors, etc
@@ -31,6 +34,19 @@ static struct pollfd fds[SOMAXCONN];
 
 void server(void) { printf("SERVER\n"); }
 
+static int set_nonblocking(int sockfd) {
+  int flags = fcntl(sockfd, F_GETFL, 0);
+  if (flags == -1) {
+    perror("fcntl F_GETFL");
+    return -1;
+  }
+  if (fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) == -1) {
+    perror("fcntl F_SETFL O_NONBLOCK");
+    return -1;
+  }
+  return 0;
+}
+
 int server_setup(char *passedServerInfo[]) {
   struct serverInformation newServer;
   struct clientInformation clients[SOMAXCONN];
@@ -41,6 +57,11 @@ int server_setup(char *passedServerInfo[]) {
   newServer.port = passedServerInfo[1];
   // socket
   newServer.fd = socket_create();
+  if (set_nonblocking(newServer.fd) == -1) {
+    perror("set_nonblocking failed");
+    close(newServer.fd);
+    return 0;
+  }
   // bind
   socket_bind(newServer);
   // listen <-- io mult
@@ -157,15 +178,23 @@ int handle_connection(int server_fd, struct clientInformation clients[],
         perror("accept failed");
         // Handle error if needed
       } else {
-        printf("New client: adding to array\n");
-        clients[*numClients].fd = client_fd;
-        // TODO add to client struct here when ready using clients[*numClients]
-        (*numClients)++;
+        // Set client socket to non-blocking mode
+        if (set_nonblocking(client_fd) == -1) {
+          perror("set_nonblocking failed");
+          // Handle error if needed
+          close(client_fd);
+        } else {
+          printf("New client: adding to array\n");
+          clients[*numClients].fd = client_fd;
+          // TODO add to client struct here when ready using
+          // clients[*numClients]
+          (*numClients)++;
 
-        fds[*numClients - 1].fd = client_fd;
+          fds[*numClients - 1].fd = client_fd;
 
-        // waits for next input from any client
-        fds[*numClients - 1].events = POLLIN;
+          // waits for next input from any client
+          fds[*numClients - 1].events = POLLIN;
+        }
       }
     }
 
@@ -486,6 +515,28 @@ int head_req_response(int client_socket, const char *filePath) {
   return 0;
 }
 
+int send_response_post(int client_socket, const char *resPath) {
+  char response[MAX_BUFFER_SIZE];
+  int status_code =
+      (resPath != NULL) ? STATUS_RES_CREATED : STATUS_INTERNAL_SERVER_ERR;
+
+  if (resPath != NULL) {
+    snprintf(response, MAX_BUFFER_SIZE,
+             "HTTP/1.1 %d Created\r\nLocation: %s\r\n\r\n", status_code,
+             resPath);
+  } else {
+    snprintf(response, MAX_BUFFER_SIZE,
+             "HTTP/1.1 %d Internal Server Error\r\n\r\n", status_code);
+  }
+
+  if (send(client_socket, response, strlen(response), 0) == -1) {
+    perror("Error sending response header");
+    return -1;
+  }
+
+  return 0;
+}
+
 /**
  * Function to handle post requests
  * @return wheee
@@ -513,8 +564,6 @@ int post_req_response(int client_socket, const char *filePath,
   appendTextToFile(modifiedFilePath, data);
 
   free(duped);
-  if (client_socket == -1) {
-    return -1;
-  }
+  send_response_post(client_socket, modifiedFilePath);
   return 0;
 }

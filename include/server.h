@@ -23,6 +23,7 @@ int client_close(int client);
 int send_response_resource(int client_socket, const char *content,
                            size_t content_length);
 int send_response_head(int client_socket, size_t content_length);
+int send_response_post(int client_socket, const char *resPath);
 void start_listen(int server_fd);
 int handle_connection(int server_fd, struct clientInformation clients[],
                       int *numClients);
