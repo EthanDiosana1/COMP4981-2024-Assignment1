@@ -1,6 +1,7 @@
 // temp save server.c
 
 #include "../include/server.h"
+#include "../include/fileTools.h"
 #include "../include/httpRequest.h"
 #include "../include/stringTools.h"
 #include <arpa/inet.h>
@@ -123,7 +124,12 @@ void start_listen(int server_fd) {
 int handle_connection(int server_fd, struct clientInformation clients[],
                       int *numClients) {
   TokenAndStr requestFirstLine;
+  StringArray requestNewlineSplit;
+  StringArray contentLengthLineSplit;
+  int postContentLength;
+  const int defaultPostBodyLine = 7;
   const HTTPRequest *httpRequest;
+  char *data;
 
   // To silence the errors :/
   httpRequest = NULL;
@@ -207,8 +213,45 @@ int handle_connection(int server_fd, struct clientInformation clients[],
             head_req_response(clients[i].fd, httpRequest->path);
 
           } else if (strcmp(httpRequest->method, "POST") == 0) {
-            post_req_response(clients[i].fd, httpRequest->path);
+            // Tokenize the string based on newlines.
+            requestNewlineSplit = tokenizeString(buffer, "\n");
 
+            // Get the content length.
+            contentLengthLineSplit =
+                tokenizeString(requestNewlineSplit.strings[4], " ");
+            // NOLINTNEXTLINE
+            postContentLength = atoi(contentLengthLineSplit.strings[1]);
+
+            printf("\npostContentLength: %d\n", postContentLength);
+
+            // Allocate memory for the data plus a newline and null terminator.
+            data = (char *)malloc((unsigned)postContentLength +
+                                  2); // Adjusted size
+            if (!data) {
+              // Handle allocation failure
+              perror("Failed to allocate memory");
+              exit(EXIT_FAILURE);
+            }
+
+            memset(data, 0,
+                   (unsigned)postContentLength +
+                       2); // Initialize allocated memory to zero
+
+            // Assuming defaultPostBodyLine is the correct index for the body
+            // content
+            strncpy(data, requestNewlineSplit.strings[defaultPostBodyLine],
+                    (unsigned)postContentLength);
+
+            data[postContentLength] =
+                '\n'; // Add newline character at the end of the content
+            data[postContentLength + 1] =
+                '\0'; // Explicitly null-terminate the string
+
+            printf("\nData: %s\n", data);
+
+            // Get the content length.
+            post_req_response(clients[i].fd, httpRequest->path, data);
+            free(data);
           } else {
             // default err handling
             perror("Unknown method type");
@@ -447,7 +490,11 @@ int head_req_response(int client_socket, const char *filePath) {
  * Function to handle post requests
  * @return wheee
  */
-int post_req_response(int client_socket, const char *filePath) {
+int post_req_response(int client_socket, const char *filePath,
+                      const char *data) {
+  char *duped = strdup(data);
+  const char *modifiedFilePath;
+  modifiedFilePath = addCharacterToStart(filePath, "./server_files");
   /*
    * Steps:
    * Check if the data is valid
@@ -457,9 +504,17 @@ int post_req_response(int client_socket, const char *filePath) {
    */
   //  dbm_open("./database/test");
 
+  printf("\nData: %s\n", duped);
+  printf("\nModified file path: %s\n", modifiedFilePath);
+
+  // TODO: Get the path to the file from the client socket.
+
+  // Append the given text to the file path.
+  appendTextToFile(modifiedFilePath, data);
+
+  free(duped);
   if (client_socket == -1) {
     return -1;
   }
-  printf("%s", filePath);
   return 0;
 }

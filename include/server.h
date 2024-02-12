@@ -28,6 +28,7 @@ int handle_connection(int server_fd, struct clientInformation clients[],
                       int *numClients);
 int get_req_response(int client_socket, const char *filePath);
 int head_req_response(int client_socket, const char *filePath);
-int post_req_response(int client_socket, const char *filePath);
+int post_req_response(int client_socket, const char *filePath,
+                      const char *data);
 int run_server(void);
 #endif // MAIN_SERVER_H
