@@ -23,6 +23,8 @@ list(APPEND HEADERS ${CMAKE_SOURCE_DIR}/include/httpRequest.h)
 list(APPEND SOURCES ${CMAKE_SOURCE_DIR}/src/httpRequest.c)
 list(APPEND HEADERS ${CMAKE_SOURCE_DIR}/include/sigintHandler.h)
 list(APPEND SOURCES ${CMAKE_SOURCE_DIR}/src/sigintHandler.c)
+list(APPEND HEADERS ${CMAKE_SOURCE_DIR}/include/fileTools.h)
+list(APPEND SOURCES ${CMAKE_SOURCE_DIR}/src/fileTools.c)
 
 set(main_SOURCES
     ${CMAKE_SOURCE_DIR}/src/main.c
@@ -31,6 +33,7 @@ set(main_SOURCES
     ${CMAKE_SOURCE_DIR}/src/stringTools.c
     ${CMAKE_SOURCE_DIR}/src/httpRequest.c
     ${CMAKE_SOURCE_DIR}/src/sigintHandler.c
+    ${CMAKE_SOURCE_DIR}/src/fileTools.c
 )
 
 set(main_HEADERS
@@ -40,6 +43,7 @@ set(main_HEADERS
     ${CMAKE_SOURCE_DIR}/include/stringTools.h
     ${CMAKE_SOURCE_DIR}/include/httpRequest.h
     ${CMAKE_SOURCE_DIR}/include/sigintHandler.h
+    ${CMAKE_SOURCE_DIR}/include/fileTools.h
 )
 
 add_executable(main ${main_SOURCES})

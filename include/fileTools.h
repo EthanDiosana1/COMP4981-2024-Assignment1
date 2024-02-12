@@ -18,7 +18,7 @@ struct fileData;
  * @param filePath The path to the file.
  * @return struct * fileData
  */
-struct fileData *getFileDataFromFilePath(char *filePath);
+struct fileData *getFileDataFromFilePath(const char *filePath);
 
 /**
  * @brief Returns a new fileData struct from the params.
@@ -28,13 +28,22 @@ struct fileData *getFileDataFromFilePath(char *filePath);
  * @param content The file content.
  * @return fileData struct
  */
-struct fileData *initializeFileDataStruct(int fileNameLength, char *fileName,
-                                          long contentLength, char *content);
+struct fileData *initializeFileDataStruct(int fileNameLength,
+                                          const char *fileName,
+                                          long contentLength,
+                                          const char *content);
 
 /**
  * @brief Prints a fileData struct to the console.
  * @param fileData The struct to print.
  */
 void printFileDataStruct(const struct fileData *fileData);
+
+/**
+ * @brief Appends text to a given file.
+ * @param filePath The full file path.
+ * @param text The text to append.
+ */
+void appendTextToFile(const char *filePath, const char *text);
 
 #endif // FILETOOLS_H
