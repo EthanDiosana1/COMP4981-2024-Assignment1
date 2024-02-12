@@ -1,4 +1,4 @@
-// structure: include other relavent .h files
+// structure: include other relevant .h files
 // main should parse args
 
 #include "client.h"

@@ -457,8 +457,6 @@ int post_req_response(int client_socket, const char *filePath) {
    */
   //  dbm_open("./database/test");
 
-
-
   if (client_socket == -1) {
     return -1;
   }
