@@ -416,7 +416,7 @@ int head_req_response(int client_socket, const char *filePath) {
   checkIfRoot(filePath, verified_path);
 
   // append "." to filePathWithDot
-  filePathWithDot = addCharacterToStart(verified_path, ".");
+  filePathWithDot = addCharacterToStart(verified_path, "./");
   if (filePathWithDot == NULL) {
     perror(". character not added");
     return -1;
@@ -456,6 +456,9 @@ int post_req_response(int client_socket, const char *filePath) {
    * Close db
    */
   //  dbm_open("./database/test");
+
+
+
   if (client_socket == -1) {
     return -1;
   }
