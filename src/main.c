@@ -4,6 +4,7 @@
 #include "client.h"
 #include "server.h"
 #include "sigintHandler.h"
+#include "stringTools.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -70,7 +71,11 @@ struct arguments parse_args(int argc, char *argv[]) {
   }
 
   // Check if required options are provided
-  if (newArgs.type == NULL || newArgs.ip == NULL || newArgs.port == NULL) {
+  if (newArgs.type == NULL || newArgs.ip == NULL || newArgs.port == NULL ||
+      (!checkIfCharInString(newArgs.ip, '.')) ||
+      (checkIfCharInString(
+          newArgs.port,
+          '.'))) { // TODO add || for if ip has no "." or if port has "."
     fprintf(stderr, "Usage: %s -t type -i ip -p port\n", argv[0]);
     exit(EXIT_FAILURE);
   }

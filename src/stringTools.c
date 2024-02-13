@@ -136,3 +136,13 @@ char *addCharacterToStart(const char *original, const char *toAdd) {
   strcat(returnString, original);
   return returnString;
 }
+
+bool checkIfCharInString(const char *stringToCheck, char toCheck) {
+  const size_t checkLength = strlen(stringToCheck);
+  for (size_t i = 0; i < checkLength; i++) {
+    if (stringToCheck[i] == toCheck) {
+      return true;
+    }
+  }
+  return false;
+}

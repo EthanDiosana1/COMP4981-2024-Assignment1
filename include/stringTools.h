@@ -5,6 +5,7 @@
 #ifndef STRINGTOOLS_H
 #define STRINGTOOLS_H
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -83,4 +84,11 @@ unsigned int getNumberOfTokens(const char *string, const char *delim);
  */
 char *addCharacterToStart(const char *original, const char *toAdd);
 
+/**
+ * @brief Checks if a string contains a specific character
+ * @param stringToCheck the string to check
+ * @param toCheck the character to check for
+ * @return false if no character is found
+ */
+bool checkIfCharInString(const char *stringToCheck, char toCheck);
 #endif // STRINGTOOLS_H
