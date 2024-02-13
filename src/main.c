@@ -75,7 +75,7 @@ struct arguments parse_args(int argc, char *argv[]) {
       (!checkIfCharInString(newArgs.ip, '.')) ||
       (checkIfCharInString(
           newArgs.port,
-          '.'))) { // TODO add || for if ip has no "." or if port has "."
+          '.'))) {
     fprintf(stderr, "Usage: %s -t type -i ip -p port\n", argv[0]);
     exit(EXIT_FAILURE);
   }
